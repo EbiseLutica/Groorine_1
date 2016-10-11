@@ -1,0 +1,32 @@
+﻿<Page
+    x:Class="Groorine2.View.MidiEventView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Groorine2.View"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:groorineCore="using:GroorineCore"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+		<Pivot ItemsSource="{x:Bind ViewModel.CurrentFile.File.Tracks}">
+			<Pivot.HeaderTemplate>
+				<DataTemplate x:DataType="groorineCore:Track">
+					<TextBlock Text="{x:Bind Name}"/>
+				</DataTemplate>
+			</Pivot.HeaderTemplate>
+			<Pivot.ItemTemplate>
+				<DataTemplate x:DataType="groorineCore:Track">
+					<ListBox ItemsSource="{x:Bind Events}">
+						<ListBox.ItemTemplate>
+							<DataTemplate x:DataType="groorineCore:MidiEvent">
+								<TextBlock Text="{x:Bind}"/>
+							</DataTemplate>
+						</ListBox.ItemTemplate>
+					</ListBox>
+				</DataTemplate>
+			</Pivot.ItemTemplate>
+		</Pivot>
+
+	</Grid>
+</Page>

@@ -1,0 +1,163 @@
+﻿<Page
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Groorine2"
+    xmlns:ctl="using:Groorine2.Controls"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	x:Class="Groorine2.MainPage"
+	mc:Ignorable="d" 
+	>
+
+	<Page.Resources>
+		<local:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+		<DataTemplate x:Key="NavMenuItemTemplate" x:DataType="local:NavMenuItem">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="48" />
+					<ColumnDefinition />
+
+				</Grid.ColumnDefinitions>
+				<!-- Showing a ToolTip and the Label is redundant.  We put the ToolTip on the icon.
+                     It appears when the user hovers over the icon, but not the label which provides
+                     value when the SplitView is 'Compact' while reducing the likelihood of showing
+                     redundant information when the label is shown.-->
+				<FontIcon x:Name="Glyph" FontSize="16" Glyph="{x:Bind SymbolAsChar}" VerticalAlignment="Center" HorizontalAlignment="Center" ToolTipService.ToolTip="{x:Bind Label}"/>
+				<TextBlock x:Name="Text" Grid.Column="1" Text="{x:Bind Label}" Style="{StaticResource BodyTextBlockStyle}" TextWrapping="NoWrap"/>
+			</Grid>
+		</DataTemplate>
+	</Page.Resources>
+
+	<Grid x:Name="LayoutRoot">
+		<!-- Adaptive triggers -->
+		<VisualStateManager.VisualStateGroups>
+			<VisualStateGroup>
+				<VisualState>
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="{StaticResource LargeWindowSnapPoint}" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="RootSplitView.DisplayMode" Value="CompactInline"/>
+						<Setter Target="RootSplitView.IsPaneOpen" Value="false"/>
+					</VisualState.Setters>
+				</VisualState>
+				<VisualState>
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="{StaticResource MediumWindowSnapPoint}" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="RootSplitView.DisplayMode" Value="CompactInline"/>
+						<Setter Target="RootSplitView.IsPaneOpen" Value="False"/>
+					</VisualState.Setters>
+				</VisualState>
+				<VisualState>
+					<VisualState.StateTriggers>
+						<AdaptiveTrigger MinWindowWidth="{StaticResource MinWindowSnapPoint}" />
+					</VisualState.StateTriggers>
+					<VisualState.Setters>
+						<Setter Target="RootSplitView.DisplayMode" Value="Overlay"/>
+						<Setter Target="RootSplitView.IsPaneOpen" Value="False"/>
+					</VisualState.Setters>
+				</VisualState>
+			</VisualStateGroup>
+		</VisualStateManager.VisualStateGroups>
+
+		<!-- Top-level navigation menu + app content -->
+		<SplitView x:Name="RootSplitView"
+                   DisplayMode="CompactInline"
+                   OpenPaneLength="320"
+                   PaneClosed="RootSplitView_PaneClosed"
+                   IsTabStop="False">
+
+			<SplitView.Pane>
+				<Grid Background="{StaticResource GroorineBrandLightBrush}">
+
+					<!-- A custom ListView to display the items in the pane.  The automation Name is set in the ContainerContentChanging event. -->
+					<ctl:NavMenuListView x:Name="NavMenuList"
+                                          Grid.ColumnSpan="3"
+                                          TabIndex="3"
+                                          Margin="0,48,0,0"
+										 Background="{StaticResource GroorineBrandDarkBrush}"
+                                          ContainerContentChanging="NavMenuItemContainerContentChanging"
+                                          ItemContainerStyle="{StaticResource NavMenuItemContainerStyle}"
+                                          ItemTemplate="{StaticResource NavMenuItemTemplate}"
+                                          ItemInvoked="NavMenuList_ItemInvoked"
+										 />
+
+				</Grid>
+			</SplitView.Pane>
+
+			<!-- OnNavigatingToPage we synchronize the selected item in the nav menu with the current page.
+                 OnNavigatedToPage we move keyboard focus to the first item on the page after it's loaded and update the Back button. -->
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="48"/>
+					<RowDefinition Height="*"/>
+				</Grid.RowDefinitions>
+
+				<CommandBar FlowDirection="LeftToRight" Background="Transparent">
+
+					<CommandBar.PrimaryCommands>
+						<AppBarButton  Icon="Volume">
+							<AppBarButton.Flyout>
+								<Flyout Placement="Bottom">
+									<Slider Maximum="127" Value="{x:Bind ViewModel.MasterVolume, Mode=TwoWay, Converter={StaticResource Int32ToDoubleConverter}}" VerticalAlignment="Center" Margin="0"/>
+								</Flyout>
+							</AppBarButton.Flyout>
+						</AppBarButton>
+						<AppBarButton ToolTipService.ToolTip="Stop" Click="{x:Bind ViewModel.Stop}" IsEnabled="{x:Bind ViewModel.CanStop, Mode=OneWay}" Icon="Stop"/>
+						<AppBarButton ToolTipService.ToolTip="Play" Click="{x:Bind ViewModel.Play}" IsEnabled="{x:Bind ViewModel.CanPlay, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsNotPlaying, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" Icon="Play"/>
+						<AppBarButton ToolTipService.ToolTip="Pause" Click="{x:Bind ViewModel.Pause}" Visibility="{x:Bind ViewModel.IsPlaying, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" Icon="Pause"/>
+						
+					</CommandBar.PrimaryCommands>
+					<CommandBar.SecondaryCommands>
+						<AppBarToggleButton  Icon="RepeatAll" Label="Loop"/>
+						<AppBarSeparator/>
+						<AppBarToggleButton Label="Like"/>
+						<AppBarToggleButton Label="Unlike"/>
+						<AppBarSeparator/>
+						<AppBarButton Label="Import from midi file" Click="{x:Bind ViewModel.ImportFromMidi}"/>
+						<AppBarButton Label="Export to audio file" Click="{x:Bind ViewModel.ExportToAudio}"/>
+					</CommandBar.SecondaryCommands>
+					<CommandBar.Content>
+						<StackPanel>
+							<TextBlock Text="{x:Bind ViewModel.CurrentFile.Title, Mode=OneWay}" FontSize="18" Foreground="{StaticResource SystemControlPageTextBaseHighBrush}" Margin="64,2,0,0"/>
+							<TextBlock Text="{x:Bind ViewModel.CurrentFile.Copyright, Mode=OneWay}" FontSize="13" Foreground="{StaticResource SystemControlPageTextBaseMediumBrush}" Margin="80,0,0,0"/>
+						</StackPanel>
+					</CommandBar.Content>
+				</CommandBar>
+
+
+				<Frame Grid.Row="1" x:Name="frame"
+                   Margin="0,0,0,0"
+                   Navigating="OnNavigatingToPage"
+                   Navigated="OnNavigatedToPage">
+					<Frame.ContentTransitions>
+						<TransitionCollection>
+							<NavigationThemeTransition>
+								<NavigationThemeTransition.DefaultNavigationTransitionInfo>
+									<EntranceNavigationTransitionInfo/>
+								</NavigationThemeTransition.DefaultNavigationTransitionInfo>
+							</NavigationThemeTransition>
+						</TransitionCollection>
+					</Frame.ContentTransitions>
+				</Frame>
+				
+			</Grid>
+		</SplitView>
+
+		<!-- Declared last to have it rendered above everything else, but it needs to be the first item in the tab sequence. -->
+		<ToggleButton x:Name="TogglePaneButton"
+                      TabIndex="1"
+                      Margin="0,0,0,0"
+                      Style="{StaticResource SplitViewTogglePaneButtonStyle}"
+                      IsChecked="{Binding IsPaneOpen, ElementName=RootSplitView, Mode=TwoWay}"
+                      Unchecked="TogglePaneButton_Unchecked"
+                      Checked="TogglePaneButton_Checked"
+                      AutomationProperties.Name="Menu"
+                      ToolTipService.ToolTip="Menu" />
+		
+	</Grid>
+
+
+</Page>
