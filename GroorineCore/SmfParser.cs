@@ -144,13 +144,13 @@ namespace GroorineCore
 										}
 										if (vel > 0)
 										{
-											events.Add(noteDic[note] = new NoteEvent
+											noteDic[note] = new NoteEvent
 											{
 												Channel = channel,
 												Note = note,
 												Velocity = vel,
 												Tick = tick
-											});
+											};
 										}
 										break;
 									case 0x80:
@@ -161,6 +161,7 @@ namespace GroorineCore
 										if (noteDic.ContainsKey(note))
 										{
 											noteDic[note].Gate = tick - noteDic[note].Tick;
+											events.Add(noteDic[note]);
 											noteDic.Remove(note);
 										}
 										break;
@@ -208,6 +209,7 @@ namespace GroorineCore
 										// PAT
 										l = br.ReadByte();
 										m = br.ReadByte();
+										j += 2;
 										events.Add(new PolyphonicKeyPressureEvent
 										{
 											Channel = channel,
@@ -218,13 +220,13 @@ namespace GroorineCore
 										break;
 									case 0xD0:
 										// CAT
-										l = br.ReadByte();
 										events.Add(new ChannelPressureEvent
 										{
 											Channel = channel,
 											Tick = tick,
-											Pressure = l
+											Pressure = br.ReadByte()
 										});
+										j++;
 										break;
 									default:
 										if ((type & 0x80) == 0)
@@ -291,6 +293,7 @@ namespace GroorineCore
 														NoteNumber = type,
 														Pressure = br.ReadByte()
 													});
+													j++;
 													break;
 												case 0xD0:
 													// CAT

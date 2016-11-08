@@ -131,13 +131,15 @@ namespace GroorineCore
 			double firstTime = Time;
 
 			double getTime(int index) => index / (SampleRate * 0.001 * 2);
-
+			double time;
+			(float, float) tmp;
+			int tick;
 			for (var i = 0; i < BufferSize; i += 2)
 			{
-				var time = getTime(i);
+				time = getTime(i);
 				//var x = _cycler.Update();
 				Time = (long)(firstTime + getTime(i));
-				var tick = CurrentFile.Conductor.ToTick((int)Time);
+				tick = CurrentFile.Conductor.ToTick((int)Time);
 			
 				if (CurrentFile != null)
 				{
@@ -164,7 +166,7 @@ namespace GroorineCore
 							//foreach (MidiEvent me in t.GetDataBetweenTicks(_preTick, tick))
 							foreach (MidiEvent me in t.Events)
 							{
-								if (_preTick <= me.Tick && me.Tick <= tick)
+								if (_preTick < me.Tick && me.Tick <= tick)
 									Tracks[me.Channel]?.SendEvent(me, tick);
 							}
 						}
@@ -172,7 +174,7 @@ namespace GroorineCore
 				}
 
 				
-				(float, float) tmp = (0, 0);
+				tmp = (0, 0);
 				//foreach (Track t in Tracks)
 				//{
 				for (var ti = 0; ti < Track.Tones.Length; ti++)
@@ -188,8 +190,8 @@ namespace GroorineCore
 					(float, float) sample = await Tracks[t.Channel].ProcessAsync(t, SampleRate);
 
 					//(float, float) sample = (0, 0);
-					tmp.Item1 += sample.Item1 / Track.Tones.Length;
-					tmp.Item2 += sample.Item2 / Track.Tones.Length;
+					tmp.Item1 += sample.Item1;
+					tmp.Item2 += sample.Item2;
 					t.Tick = tick;
 				}
 				//}
@@ -426,9 +428,10 @@ namespace GroorineCore
 				var panrt = Channel.Panpot / 127f;
 				var volrt = Channel.Volume / 127f;
 				var exprt = Channel.Expression / 127f;
+				var a = 1f / Tones.Length;
 				var kake = volrt * exprt;
-				var i1 = kake * (1 - panrt);
-				var i2 = kake * panrt;
+				var i1 = kake * (1 - panrt) * a;
+				var i2 = kake * panrt * a;
 				if (t == null)
 					return output;
 				/*for (var i = 0; i < Tones.Length; i++)
@@ -458,7 +461,7 @@ namespace GroorineCore
 			}
 
 
-			public static float GetFreq(int noteno) => (float)(441 * Pow(2, (noteno - 69) / 12.0));
+			public static float GetFreq(int noteno) => (float)(440 * Pow(2, (noteno - 69) / 12.0));
 
 		}
 	}

@@ -25,7 +25,7 @@
 
 		public double StartTick
 		{
-			get { return _tick; }
+			get { return _startTick; }
 			set { SetProperty(ref _startTick, value); }
 		}
 

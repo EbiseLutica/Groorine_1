@@ -16,6 +16,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Groorine.XamForms", "Groorine.XamForms\Groorine.XamForms\Groorine.XamForms.csproj", "{968E5C78-EE03-4C21-8FDA-409D8946AAA2}"
+	ProjectSection(ProjectDependencies) = postProject
+		{78C9371C-C543-4B1B-91F9-E55E3E602DD1} = {78C9371C-C543-4B1B-91F9-E55E3E602DD1}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Groorine.XamForms.Droid", "Groorine.XamForms\Groorine.XamForms.Droid\Groorine.XamForms.Droid.csproj", "{0D7BF57C-A689-4519-B557-72F92E5F16CE}"
 EndProject
@@ -85,7 +88,9 @@ Global
 		{D331D9AC-6B74-4393-B57C-DEB03C0D3F0F}.AppStore|x86.ActiveCfg = Release|x86
 		{D331D9AC-6B74-4393-B57C-DEB03C0D3F0F}.AppStore|x86.Build.0 = Release|x86
 		{D331D9AC-6B74-4393-B57C-DEB03C0D3F0F}.AppStore|x86.Deploy.0 = Release|x86
-		{D331D9AC-6B74-4393-B57C-DEB03C0D3F0F}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{D331D9AC-6B74-4393-B57C-DEB03C0D3F0F}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{D331D9AC-6B74-4393-B57C-DEB03C0D3F0F}.Debug|Any CPU.Build.0 = Debug|x64
+		{D331D9AC-6B74-4393-B57C-DEB03C0D3F0F}.Debug|Any CPU.Deploy.0 = Debug|x64
 		{D331D9AC-6B74-4393-B57C-DEB03C0D3F0F}.Debug|ARM.ActiveCfg = Debug|ARM
 		{D331D9AC-6B74-4393-B57C-DEB03C0D3F0F}.Debug|ARM.Build.0 = Debug|ARM
 		{D331D9AC-6B74-4393-B57C-DEB03C0D3F0F}.Debug|ARM.Deploy.0 = Debug|ARM

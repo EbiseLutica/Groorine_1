@@ -24,7 +24,7 @@ namespace GroorineCore
 			{
 				SetProperty(ref _events, value);
 
-				Length = Events.LastOrDefault()?.Tick ?? 0;
+				SetLength();
 			}
 		}
 
@@ -39,7 +39,17 @@ namespace GroorineCore
 		{
 			events = events ?? new ObservableCollection<MidiEvent>();
 			Events = events;
-			Events.CollectionChanged += (sender, args) => Length = Events.LastOrDefault()?.Tick ?? 0;
+			Events.CollectionChanged += (s, e) => SetLength();
+		}
+		
+		private void SetLength()
+		{
+			MidiEvent lod = Events.LastOrDefault();
+			if (lod == null)
+				return;
+			Length = lod.Tick;
+			if (lod is NoteEvent ne)
+				Length = ne.Tick + ne.Gate;
 		}
 
 		/// <summary>

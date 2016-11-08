@@ -63,7 +63,7 @@ namespace GroorineCore
 				
 				
 				// 現状拡張子のみで判断しているのでなんとかしたい
-				switch (Path.GetExtension(f.Path).ToLower())
+				switch (Path.GetExtension(f.Path).ToLower().Remove(0, 1))
 				{
 					case "mssf":    // Music Sheet Sound File
 						Stream s = await f.OpenAsync(FileAccess.Read);

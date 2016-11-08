@@ -25,13 +25,16 @@ namespace GroorineTest
 		{
 			
 			bwp = new BufferedWaveProvider(new WaveFormat(44100, 16, 2));
-			MMDevice mmDevice = new MMDeviceEnumerator().GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-
+			var mde = new MMDeviceEnumerator();
+			MMDevice mmDevice = mde.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+			
 			player = new Player(50);
 			//player.BufferCallBack += Player_BufferCallBack;
 			//player.Play();
 
-			Task t = Playing();
+#pragma warning disable CS4014 // この呼び出しを待たないため、現在のメソッドの実行は、呼び出しが完了する前に続行します
+			Playing();
+#pragma warning restore CS4014 // この呼び出しを待たないため、現在のメソッドの実行は、呼び出しが完了する前に続行します
 
 			using (IWavePlayer wavPlayer = new WasapiOut(mmDevice, AudioClientShareMode.Shared, false, 100))
 			{
@@ -47,7 +50,13 @@ namespace GroorineTest
 				for (;;)
 				{
 					Thread.Sleep(1);
-					Console.Write($"{bwp.BufferedBytes}\t\t{bwp.BufferLength}\t\t{player.Time}\t\t{player.CurrentFile?.Length}\t\t{delta}\t\r");
+					//Console.Write($"{bwp.BufferedBytes}\t\t{bwp.BufferLength}\t\t{player.Time}\t\t{player.CurrentFile?.Length}\t\t{delta}\t\r");
+					Console.SetCursorPosition(0, 0);
+					foreach (Tone t in Player.Track.Tones)
+						if (t != null)
+							Console.WriteLine($"CH{t.Channel} ♪{t.NoteNum} V{t.Velocity} {Enum.GetName(typeof(EnvelopeFlag), t.EnvFlag)} G{t.Gate} ST{t.StartTick:###.0} T{t.Tick:###.0}");
+						else
+							Console.WriteLine();
 				}
 			}
 
@@ -58,7 +67,7 @@ namespace GroorineTest
 
 		private static async Task Playing()
 		{
-			player.Load(SmfParser.Parse(File.OpenRead("C020.mid")));
+			player.Load(SmfParser.Parse(File.OpenRead("register-piano.mid")));
 			player.Play();
 			while (true)
 			{
