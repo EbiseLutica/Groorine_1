@@ -1,6 +1,6 @@
 ﻿using GroorineCore;
 
-namespace Groorine2
+namespace Groorine
 {
 	public class GroorineFileViewModel : BindableBase
 	{

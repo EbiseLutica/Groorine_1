@@ -1,6 +1,8 @@
 ﻿{
   "dependencies": {
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0"
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
+    "PCLExt.FileStorage": "1.0.5",
+    "PCLStorage": "1.0.2"
   },
   "frameworks": {
     "uap10.0": {}

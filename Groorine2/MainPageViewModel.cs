@@ -8,7 +8,7 @@ using Windows.Storage.Pickers;
 using Windows.UI.Popups;
 using GroorineCore;
 
-namespace Groorine2
+namespace Groorine
 {
 	public class MainPageViewModel : BindableBase
 	{
@@ -149,7 +149,7 @@ namespace Groorine2
 
 			filePicker.CommitButtonText = "Import";
 
-			var file = await filePicker.PickSingleFileAsync();
+			StorageFile file = await filePicker.PickSingleFileAsync();
 
 			if (file == null)
 				return;
@@ -160,9 +160,9 @@ namespace Groorine2
 				await new MessageDialog("Please select a valid standard midi file.", "Selected file is not a midi file!").ShowAsync();
 				return;
 			}
-			
 
-			var rootDir = await ApplicationData.Current.RoamingFolder.TryGetItemAsync("Music");
+
+			IStorageItem rootDir = await ApplicationData.Current.RoamingFolder.TryGetItemAsync("Music");
 			var dir = rootDir as StorageFolder;
 			if (dir == null)
 			{
@@ -181,7 +181,7 @@ namespace Groorine2
 
 		private async void Initialize()
 		{
-			var rootDir = await ApplicationData.Current.RoamingFolder.TryGetItemAsync("Music");
+			IStorageItem rootDir = await ApplicationData.Current.RoamingFolder.TryGetItemAsync("Music");
 			var dir = rootDir as StorageFolder;
 			if (dir == null)
 			{
@@ -190,9 +190,9 @@ namespace Groorine2
 				var file = await Package.Current.InstalledLocation.TryGetItemAsync("Hello, Groorine.mid") as StorageFile;
 				file?.CopyAsync(dir);
 			}
-			var asyncOperation = dir?.GetFilesAsync();
+			Windows.Foundation.IAsyncOperation<System.Collections.Generic.IReadOnlyList<StorageFile>> asyncOperation = dir?.GetFilesAsync();
 			if (asyncOperation == null) return;
-			var files = await asyncOperation;
+			System.Collections.Generic.IReadOnlyList<StorageFile> files = await asyncOperation;
 			if (files != null)
 				MusicFiles = new ObservableCollection<StorageFile>(files);
 			

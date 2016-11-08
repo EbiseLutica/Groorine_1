@@ -1,8 +1,8 @@
 ﻿<Application
-    x:Class="Groorine2.App"
+    x:Class="Groorine.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:Groorine2"
+    xmlns:local="using:Groorine"
     RequestedTheme="Dark">
 
     <Application.Resources>

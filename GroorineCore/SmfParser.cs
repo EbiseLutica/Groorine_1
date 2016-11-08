@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
+using static GroorineCore.MidiTimingConverter;
 
 namespace GroorineCore
 {
@@ -14,11 +15,11 @@ namespace GroorineCore
 	{
 		public static GroorineFile Parse(Stream data)
 		{
-			ObservableCollection<Track> tracks = new ObservableCollection<Track>();
+			var tracks = new ObservableCollection<Track>();
 			var title = "";
 			var copyright = "";
-			
-
+			long? loopStart = null;
+			var metas = new ObservableCollection<MetaEvent>();
 			
 			using (var br = new BinaryReader(data, Encoding.UTF8))
 			{
@@ -64,9 +65,10 @@ namespace GroorineCore
 								// MetaEvent
 								var type = br.ReadByte();
 								var len = br.ReadVariableLength(ref j);
-								var d = br.ReadBytes(len);
-								var moji = (from el in d
+								byte[] d = br.ReadBytes(len);
+								char[] moji = (from el in d
 									select (char) el).ToArray();
+								
 								//Debug.WriteLine($"MetaEvent {type:x} {len:x} {new string(moji)}");
 								j++;
 								j += len;
@@ -79,6 +81,26 @@ namespace GroorineCore
 										mt.Name = new string(moji);
 										if (i == 0)
 											title = new string(moji);
+										break;
+									case 0x51:
+										metas.Add(new TempoEvent
+										{
+											Tempo = TempoToBpm(d[0] << 16 | d[1] << 8 | d[2]),
+											Tick = tick
+										});
+										break;
+									case 0x58:
+										int Pow(int a, int b)
+										{
+											for (var hage = 1; hage < b; hage++)
+												a *= a;
+											return a;
+										}
+										metas.Add(new BeatEvent
+										{
+											Rhythm = d[0],
+											Note = Pow(2, d[1])
+										});
 										break;
 								}
 								break;
@@ -144,12 +166,19 @@ namespace GroorineCore
 										break;
 									case 0xB0:
 										// Control Change
+										byte no = br.ReadByte(), dat = br.ReadByte();
+										if (no == 111)
+										{
+											loopStart = tick;
+											j += 2;
+											break;
+										}
 										events.Add(new ControlEvent
 										{
 											Channel = channel,
 											Tick = tick,
-											ControlNo = br.ReadByte(),
-											Data = br.ReadByte()
+											ControlNo = no,
+											Data = dat
 										});
 										j += 2;
 										break;
@@ -173,6 +202,28 @@ namespace GroorineCore
 											Channel = channel,
 											Tick = tick,
 											Bend = (short)((m << 7 | l) - 8192)
+										});
+										break;
+									case 0xA0:
+										// PAT
+										l = br.ReadByte();
+										m = br.ReadByte();
+										events.Add(new PolyphonicKeyPressureEvent
+										{
+											Channel = channel,
+											Tick = tick,
+											NoteNumber = l,
+											Pressure = m
+										});
+										break;
+									case 0xD0:
+										// CAT
+										l = br.ReadByte();
+										events.Add(new ChannelPressureEvent
+										{
+											Channel = channel,
+											Tick = tick,
+											Pressure = l
 										});
 										break;
 									default:
@@ -227,9 +278,28 @@ namespace GroorineCore
 													{
 														Channel = channel,
 														Tick = tick,
-														Bend = (short)(br.ReadByte() << 7 | type)
+														Bend = (short)((br.ReadByte() << 7 | type - 8192))
 													});
 													j++;
+													break;
+												case 0xA0:
+													// PAT
+													events.Add(new PolyphonicKeyPressureEvent
+													{
+														Channel = channel,
+														Tick = tick,
+														NoteNumber = type,
+														Pressure = br.ReadByte()
+													});
+													break;
+												case 0xD0:
+													// CAT
+													events.Add(new ChannelPressureEvent
+													{
+														Channel = channel,
+														Tick = tick,
+														Pressure = type
+													});
 													break;
 											}
 										}
@@ -241,7 +311,7 @@ namespace GroorineCore
 						}
 					}
 				}
-				return new GroorineFile(tracks, resolution, title, copyright);
+				return new GroorineFile(new ConductorTrack(metas, resolution), tracks, resolution, title, copyright);
 			}
 
 			//塩基[] 塩基配列 = {A, G, C, T, A, A, T, G, G, T, C, A, C, C, A, G, G, T};

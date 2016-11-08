@@ -4,7 +4,7 @@
   <mp:PhoneIdentity PhoneProductId="dc2e1f85-cf58-4669-9597-474ac15781cf" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
     <DisplayName>Groorine2</DisplayName>
-    <PublisherDisplayName>pokem</PublisherDisplayName>
+    <PublisherDisplayName>Citringo</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>

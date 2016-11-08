@@ -5,13 +5,13 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Groorine2")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Groorine")]
+[assembly: AssemblyDescription("クロスプラットフォームで，オリジナル音源搭載の MIDI プレイヤー．")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("Groorine2")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCompany("Citringo")]
+[assembly: AssemblyProduct("Groorine")]
+[assembly: AssemblyCopyright("(C)2016 Citringo")]
+[assembly: AssemblyTrademark("Groorine")]
 [assembly: AssemblyCulture("")]
 
 // Version information for an assembly consists of the following four values:

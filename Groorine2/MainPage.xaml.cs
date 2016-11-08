@@ -7,12 +7,12 @@ using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Navigation;
-using Groorine2.Controls;
-using Groorine2.View;
+using Groorine.Controls;
+using Groorine.View;
 
 // 空白ページのアイテム テンプレートについては、http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409 を参照してください
 
-namespace Groorine2
+namespace Groorine
 {
     /// <summary>
     /// それ自体で使用できる空白ページまたはフレーム内に移動できる空白ページ。
@@ -62,7 +62,7 @@ namespace Groorine2
 
 				CheckTogglePaneButtonSizeChanged();
 
-				var titleBar = Windows.ApplicationModel.Core.CoreApplication.GetCurrentView().TitleBar;
+				Windows.ApplicationModel.Core.CoreApplicationViewTitleBar titleBar = Windows.ApplicationModel.Core.CoreApplication.GetCurrentView().TitleBar;
 				titleBar.IsVisibleChanged += TitleBar_IsVisibleChanged;
 			};
 
@@ -96,7 +96,7 @@ namespace Groorine2
 			if (!_isPaddingAdded && sender.IsVisible)
 			{
 				//add extra padding between window title bar and app content
-				double extraPadding = (double)Application.Current.Resources["DesktopWindowTopPadding"];
+				var extraPadding = (double)Application.Current.Resources["DesktopWindowTopPadding"];
 				_isPaddingAdded = true;
 
 				Thickness margin = NavMenuList.Margin;
@@ -161,7 +161,7 @@ namespace Groorine2
 
 		private void SystemNavigationManager_BackRequested(object sender, BackRequestedEventArgs e)
 		{
-			bool handled = e.Handled;
+			var handled = e.Handled;
 			BackRequested(ref handled);
 			e.Handled = handled;
 		}
@@ -212,12 +212,12 @@ namespace Groorine2
 		{
 			if (e.NavigationMode == NavigationMode.Back)
 			{
-				var item = (from p in _navlist where p.DestPage == e.SourcePageType select p).SingleOrDefault();
+				NavMenuItem item = (from p in _navlist where p.DestPage == e.SourcePageType select p).SingleOrDefault();
 				if (item == null && AppFrame.BackStackDepth > 0)
 				{
 					// In cases where a page drills into sub-pages then we'll highlight the most recent
 					// navigation menu item that appears in the BackStack
-					foreach (var entry in AppFrame.BackStack.Reverse())
+					foreach (PageStackEntry entry in AppFrame.BackStack.Reverse())
 					{
 						item = (from p in _navlist where p.DestPage == entry.SourcePageType select p).SingleOrDefault();
 						if (item != null)
@@ -242,7 +242,7 @@ namespace Groorine2
 			var page = e.Content as Page;
 			if (page != null && e.Content != null)
 			{
-				var control = page;
+				Page control = page;
 				control.Loaded += Page_Loaded;
 			}
 		}
@@ -316,8 +316,8 @@ namespace Groorine2
 			if (RootSplitView.DisplayMode == SplitViewDisplayMode.Inline ||
 				RootSplitView.DisplayMode == SplitViewDisplayMode.Overlay)
 			{
-				var transform = TogglePaneButton.TransformToVisual(this);
-				var rect = transform.TransformBounds(new Rect(0, 0, TogglePaneButton.ActualWidth, TogglePaneButton.ActualHeight));
+				Windows.UI.Xaml.Media.GeneralTransform transform = TogglePaneButton.TransformToVisual(this);
+				Rect rect = transform.TransformBounds(new Rect(0, 0, TogglePaneButton.ActualWidth, TogglePaneButton.ActualHeight));
 				TogglePaneButtonRect = rect;
 			}
 			else
@@ -325,7 +325,7 @@ namespace Groorine2
 				TogglePaneButtonRect = new Rect();
 			}
 
-			var handler = TogglePaneButtonRectChanged;
+			TypedEventHandler<MainPage, Rect> handler = TogglePaneButtonRectChanged;
 			// handler(this, this.TogglePaneButtonRect);
 			handler?.DynamicInvoke(this, TogglePaneButtonRect);
 		}

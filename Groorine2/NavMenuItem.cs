@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml.Controls;
 
-namespace Groorine2
+namespace Groorine
 {
     /// <summary>
     /// Data to represent an item in the nav menu.
@@ -18,7 +18,7 @@ namespace Groorine2
         {
             get
             {
-                return (char)this.Symbol;
+                return (char)Symbol;
             }
         }
 

@@ -2,7 +2,7 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Data;
 
-namespace Groorine2
+namespace Groorine
 {
 	public class Int64ToDoubleConverter : IValueConverter
 	{

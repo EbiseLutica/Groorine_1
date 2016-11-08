@@ -13,7 +13,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 
-namespace Groorine2.Controls
+namespace Groorine.Controls
 {
     /// <summary>
     /// A specialized ListView to represent the items in the navigation menu.
@@ -35,14 +35,14 @@ namespace Groorine2.Controls
 
         public NavMenuListView()
         {
-            this.SelectionMode = ListViewSelectionMode.Single;
-            this.IsItemClickEnabled = true;
-            this.ItemClick += ItemClickedHandler;
+			SelectionMode = ListViewSelectionMode.Single;
+			IsItemClickEnabled = true;
+			ItemClick += ItemClickedHandler;
 
-            // Locate the hosting SplitView control
-            this.Loaded += (s, a) =>
+			// Locate the hosting SplitView control
+			Loaded += (s, a) =>
             {
-                var parent = VisualTreeHelper.GetParent(this);
+				DependencyObject parent = VisualTreeHelper.GetParent(this);
                 while (parent != null && !(parent is SplitView))
                 {
                     parent = VisualTreeHelper.GetParent(parent);
@@ -50,15 +50,15 @@ namespace Groorine2.Controls
 
                 if (parent != null)
                 {
-                    this.splitViewHost = parent as SplitView;
+					splitViewHost = parent as SplitView;
 
                     splitViewHost.RegisterPropertyChangedCallback(SplitView.IsPaneOpenProperty, (sender, args) =>
                     {
-                        this.OnPaneToggled();
+						OnPaneToggled();
                     });
 
-                    // Call once to ensure we're in the correct state
-                    this.OnPaneToggled();
+					// Call once to ensure we're in the correct state
+					OnPaneToggled();
                 }
             };
         }
@@ -68,11 +68,11 @@ namespace Groorine2.Controls
             base.OnApplyTemplate();
 
             // Remove the entrance animation on the item containers.
-            for (int i = 0; i < this.ItemContainerTransitions.Count; i++)
+            for (var i = 0; i < ItemContainerTransitions.Count; i++)
             {
-                if (this.ItemContainerTransitions[i] is EntranceThemeTransition)
+                if (ItemContainerTransitions[i] is EntranceThemeTransition)
                 {
-                    this.ItemContainerTransitions.RemoveAt(i);
+					ItemContainerTransitions.RemoveAt(i);
                 }
             }
         }
@@ -84,15 +84,15 @@ namespace Groorine2.Controls
         /// <param name="item"></param>
         public void SetSelectedItem(ListViewItem item)
         {
-            int index = -1;
+            var index = -1;
             if (item != null)
             {
-                index = this.IndexFromContainer(item);
+                index = IndexFromContainer(item);
             }
 
-            for (int i = 0; i < this.Items.Count; i++)
+            for (var i = 0; i < Items.Count; i++)
             {
-                var lvi = (ListViewItem)this.ContainerFromIndex(i);
+                var lvi = (ListViewItem)ContainerFromIndex(i);
                 if (i != index)
                 {
                     lvi.IsSelected = false;
@@ -121,46 +121,46 @@ namespace Groorine2.Controls
             switch (e.Key)
             {
                 case VirtualKey.Up:
-                    this.TryMoveFocus(FocusNavigationDirection.Up);
+					TryMoveFocus(FocusNavigationDirection.Up);
                     e.Handled = true;
                     break;
 
                 case VirtualKey.Down:
-                    this.TryMoveFocus(FocusNavigationDirection.Down);
+					TryMoveFocus(FocusNavigationDirection.Down);
                     e.Handled = true;
                     break;
 
                 case VirtualKey.Tab:
-                    var shiftKeyState = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Shift);
+					CoreVirtualKeyStates shiftKeyState = CoreWindow.GetForCurrentThread().GetKeyState(VirtualKey.Shift);
                     var shiftKeyDown = (shiftKeyState & CoreVirtualKeyStates.Down) == CoreVirtualKeyStates.Down;
 
                     // If we're on the header item then this will be null and we'll still get the default behavior.
                     if (focusedItem is ListViewItem)
                     {
                         var currentItem = (ListViewItem)focusedItem;
-                        bool onlastitem = currentItem != null && this.IndexFromContainer(currentItem) == this.Items.Count - 1;
-                        bool onfirstitem = currentItem != null && this.IndexFromContainer(currentItem) == 0;
+                        var onlastitem = currentItem != null && IndexFromContainer(currentItem) == Items.Count - 1;
+                        var onfirstitem = currentItem != null && IndexFromContainer(currentItem) == 0;
 
                         if (!shiftKeyDown)
                         {
                             if (onlastitem)
                             {
-                                this.TryMoveFocus(FocusNavigationDirection.Next);
+								TryMoveFocus(FocusNavigationDirection.Next);
                             }
                             else
                             {
-                                this.TryMoveFocus(FocusNavigationDirection.Down);
+								TryMoveFocus(FocusNavigationDirection.Down);
                             }
                         }
                         else // Shift + Tab
                         {
                             if (onfirstitem)
                             {
-                                this.TryMoveFocus(FocusNavigationDirection.Previous);
+								TryMoveFocus(FocusNavigationDirection.Previous);
                             }
                             else
                             {
-                                this.TryMoveFocus(FocusNavigationDirection.Up);
+								TryMoveFocus(FocusNavigationDirection.Up);
                             }
                         }
                     }
@@ -168,11 +168,11 @@ namespace Groorine2.Controls
                     {
                         if (!shiftKeyDown)
                         {
-                            this.TryMoveFocus(FocusNavigationDirection.Down);
+							TryMoveFocus(FocusNavigationDirection.Down);
                         }
                         else // Shift + Tab
                         {
-                            this.TryMoveFocus(FocusNavigationDirection.Up);
+							TryMoveFocus(FocusNavigationDirection.Up);
                         }
                     }
 
@@ -181,8 +181,8 @@ namespace Groorine2.Controls
 
                 case VirtualKey.Space:
                 case VirtualKey.Enter:
-                    // Fire our event using the item with current keyboard focus
-                    this.InvokeItem(focusedItem);
+					// Fire our event using the item with current keyboard focus
+					InvokeItem(focusedItem);
                     e.Handled = true;
                     break;
 
@@ -214,21 +214,21 @@ namespace Groorine2.Controls
 
         private void ItemClickedHandler(object sender, ItemClickEventArgs e)
         {
-            // Triggered when the item is selected using something other than a keyboard
-            var item = this.ContainerFromItem(e.ClickedItem);
-            this.InvokeItem(item);
+			// Triggered when the item is selected using something other than a keyboard
+			DependencyObject item = ContainerFromItem(e.ClickedItem);
+			InvokeItem(item);
         }
 
         private void InvokeItem(object focusedItem)
         {
-            this.SetSelectedItem(focusedItem as ListViewItem);
-            this.ItemInvoked(this, focusedItem as ListViewItem);
+			SetSelectedItem(focusedItem as ListViewItem);
+			ItemInvoked(this, focusedItem as ListViewItem);
 
-            if (this.splitViewHost.IsPaneOpen && (
-                this.splitViewHost.DisplayMode == SplitViewDisplayMode.CompactOverlay ||
-                this.splitViewHost.DisplayMode == SplitViewDisplayMode.Overlay))
+            if (splitViewHost.IsPaneOpen && (
+				splitViewHost.DisplayMode == SplitViewDisplayMode.CompactOverlay ||
+				splitViewHost.DisplayMode == SplitViewDisplayMode.Overlay))
             {
-                this.splitViewHost.IsPaneOpen = false;
+				splitViewHost.IsPaneOpen = false;
                 if (focusedItem is ListViewItem)
                 {
                     ((ListViewItem)focusedItem).Focus(FocusState.Programmatic);
@@ -242,16 +242,16 @@ namespace Groorine2.Controls
         /// </summary>
         private void OnPaneToggled()
         {
-            if (this.splitViewHost.IsPaneOpen)
+            if (splitViewHost.IsPaneOpen)
             {
-                this.ItemsPanelRoot.ClearValue(FrameworkElement.WidthProperty);
-                this.ItemsPanelRoot.ClearValue(FrameworkElement.HorizontalAlignmentProperty);
+				ItemsPanelRoot.ClearValue(FrameworkElement.WidthProperty);
+				ItemsPanelRoot.ClearValue(FrameworkElement.HorizontalAlignmentProperty);
             }
-            else if (this.splitViewHost.DisplayMode == SplitViewDisplayMode.CompactInline ||
-                this.splitViewHost.DisplayMode == SplitViewDisplayMode.CompactOverlay)
+            else if (splitViewHost.DisplayMode == SplitViewDisplayMode.CompactInline ||
+				splitViewHost.DisplayMode == SplitViewDisplayMode.CompactOverlay)
             {
-                this.ItemsPanelRoot.SetValue(FrameworkElement.WidthProperty, this.splitViewHost.CompactPaneLength);
-                this.ItemsPanelRoot.SetValue(FrameworkElement.HorizontalAlignmentProperty, HorizontalAlignment.Left);
+				ItemsPanelRoot.SetValue(FrameworkElement.WidthProperty, splitViewHost.CompactPaneLength);
+				ItemsPanelRoot.SetValue(FrameworkElement.HorizontalAlignmentProperty, HorizontalAlignment.Left);
             }
         }
     }

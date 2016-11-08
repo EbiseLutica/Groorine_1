@@ -7,7 +7,7 @@ using Windows.UI.Xaml.Navigation;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=402347&clcid=0x409
 
-namespace Groorine2
+namespace Groorine
 {
 	using Windows.UI;
 	using Windows.UI.ViewManagement;
@@ -44,8 +44,8 @@ namespace Groorine2
             // Change minimum window size
             ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(320, 200));
 
-            // Darken the window title bar using a color value to match app theme
-            var titleBar = ApplicationView.GetForCurrentView().TitleBar;
+			// Darken the window title bar using a color value to match app theme
+			ApplicationViewTitleBar titleBar = ApplicationView.GetForCurrentView().TitleBar;
 			
             if (titleBar != null)
             {
@@ -109,7 +109,7 @@ namespace Groorine2
         /// <param name="e">Details about the suspend request.</param>
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
-            var deferral = e.SuspendingOperation.GetDeferral();
+			SuspendingDeferral deferral = e.SuspendingOperation.GetDeferral();
             //TODO: Save application state and stop any background activity
             deferral.Complete();
         }

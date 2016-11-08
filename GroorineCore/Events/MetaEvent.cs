@@ -4,6 +4,11 @@
 	{
 		public long Tick { get; set; }
 
-		public override string ToString() => $"[{Tick}] {nameof(MetaEvent)}.{GetType().Name} ";
+		public abstract string DisplayName { get; }
+
+		public override string ToString() => $"[{Tick}] {DisplayName}: ";
 	}
+
+	
+
 }

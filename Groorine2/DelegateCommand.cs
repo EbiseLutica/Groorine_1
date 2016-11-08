@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace Groorine2
+namespace Groorine
 {
 	/// <summary> 
 	/// デリゲートを受け取るICommandの実装 
