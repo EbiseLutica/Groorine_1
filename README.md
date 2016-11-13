@@ -17,7 +17,7 @@ It will be available on:
 
 ## Build
 1. `git clone https://github.com/Citringo/Groorine_1.git`
-1. Open the project file with Visual Studio 2015
+1. Open the project file with Visual Studio "15" Preview 5
 1. Build the project
 
 ## License
