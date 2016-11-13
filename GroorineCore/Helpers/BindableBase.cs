@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace GroorineCore
+namespace GroorineCore.Helpers
 {
 	/// <summary>
 	/// モデルを簡略化するための <see cref="INotifyPropertyChanged"/> の実装。

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GroorineCore
+﻿namespace GroorineCore.Helpers
 {
 	internal static class MidiTimingConverter
 	{
@@ -12,7 +6,7 @@ namespace GroorineCore
 		public static int BpmToTempo(int bpm) => (int)(60.0 * 1000000 / bpm);
 
 
-		public static double getTime(int index, int sampleRate) => index / (sampleRate * 0.001 * 2);
+		public static double GetTime(int index, int sampleRate) => index / (sampleRate * 0.001 * 2);
 
 	}
 }

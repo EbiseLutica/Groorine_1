@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GroorineCore
+namespace GroorineCore.Events
 {
 
 	public class BeatEvent : MetaEvent

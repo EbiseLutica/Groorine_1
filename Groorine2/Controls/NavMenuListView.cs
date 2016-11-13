@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
@@ -31,7 +25,7 @@ namespace Groorine.Controls
     /// </remarks>
     public class NavMenuListView : ListView
     {
-        private SplitView splitViewHost;
+        private SplitView _splitViewHost;
 
         public NavMenuListView()
         {
@@ -50,9 +44,9 @@ namespace Groorine.Controls
 
                 if (parent != null)
                 {
-					splitViewHost = parent as SplitView;
+					_splitViewHost = parent as SplitView;
 
-                    splitViewHost.RegisterPropertyChangedCallback(SplitView.IsPaneOpenProperty, (sender, args) =>
+                    _splitViewHost.RegisterPropertyChangedCallback(SplitView.IsPaneOpenProperty, (sender, args) =>
                     {
 						OnPaneToggled();
                     });
@@ -224,11 +218,11 @@ namespace Groorine.Controls
 			SetSelectedItem(focusedItem as ListViewItem);
 			ItemInvoked(this, focusedItem as ListViewItem);
 
-            if (splitViewHost.IsPaneOpen && (
-				splitViewHost.DisplayMode == SplitViewDisplayMode.CompactOverlay ||
-				splitViewHost.DisplayMode == SplitViewDisplayMode.Overlay))
+            if (_splitViewHost.IsPaneOpen && (
+				_splitViewHost.DisplayMode == SplitViewDisplayMode.CompactOverlay ||
+				_splitViewHost.DisplayMode == SplitViewDisplayMode.Overlay))
             {
-				splitViewHost.IsPaneOpen = false;
+				_splitViewHost.IsPaneOpen = false;
                 if (focusedItem is ListViewItem)
                 {
                     ((ListViewItem)focusedItem).Focus(FocusState.Programmatic);
@@ -242,16 +236,16 @@ namespace Groorine.Controls
         /// </summary>
         private void OnPaneToggled()
         {
-            if (splitViewHost.IsPaneOpen)
+            if (_splitViewHost.IsPaneOpen)
             {
-				ItemsPanelRoot.ClearValue(FrameworkElement.WidthProperty);
-				ItemsPanelRoot.ClearValue(FrameworkElement.HorizontalAlignmentProperty);
+				ItemsPanelRoot.ClearValue(WidthProperty);
+				ItemsPanelRoot.ClearValue(HorizontalAlignmentProperty);
             }
-            else if (splitViewHost.DisplayMode == SplitViewDisplayMode.CompactInline ||
-				splitViewHost.DisplayMode == SplitViewDisplayMode.CompactOverlay)
+            else if (_splitViewHost.DisplayMode == SplitViewDisplayMode.CompactInline ||
+				_splitViewHost.DisplayMode == SplitViewDisplayMode.CompactOverlay)
             {
-				ItemsPanelRoot.SetValue(FrameworkElement.WidthProperty, splitViewHost.CompactPaneLength);
-				ItemsPanelRoot.SetValue(FrameworkElement.HorizontalAlignmentProperty, HorizontalAlignment.Left);
+				ItemsPanelRoot.SetValue(WidthProperty, _splitViewHost.CompactPaneLength);
+				ItemsPanelRoot.SetValue(HorizontalAlignmentProperty, HorizontalAlignment.Left);
             }
         }
     }

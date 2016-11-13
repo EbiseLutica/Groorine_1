@@ -26,7 +26,7 @@ namespace Groorine.XamForms.Droid
 		
 		public static void UpdateIdValues()
 		{
-			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::Groorine.XamForms.Droid.Resource.Attribute.actionBarSize;
+			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = Attribute.actionBarSize;
 		}
 		
 		public partial class Animation

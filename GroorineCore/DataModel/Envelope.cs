@@ -1,4 +1,4 @@
-﻿namespace GroorineCore
+﻿namespace GroorineCore.DataModel
 {
 
 	public struct Envelope

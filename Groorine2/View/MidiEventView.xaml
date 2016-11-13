@@ -6,20 +6,22 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:groorineCore="using:GroorineCore"
+    xmlns:dataModel="using:GroorineCore.DataModel"
+    xmlns:events="using:GroorineCore.Events"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 		<Pivot ItemsSource="{x:Bind ViewModel.CurrentFile.File.Tracks}">
 			<Pivot.HeaderTemplate>
-				<DataTemplate x:DataType="groorineCore:Track">
+				<DataTemplate x:DataType="dataModel:Track">
 					<TextBlock Text="{x:Bind Name}"/>
 				</DataTemplate>
 			</Pivot.HeaderTemplate>
 			<Pivot.ItemTemplate>
-				<DataTemplate x:DataType="groorineCore:Track">
+				<DataTemplate x:DataType="dataModel:Track">
 					<ListBox ItemsSource="{x:Bind Events}">
 						<ListBox.ItemTemplate>
-							<DataTemplate x:DataType="groorineCore:MidiEvent">
+							<DataTemplate x:DataType="events:MidiEvent">
 								<TextBlock Text="{x:Bind}"/>
 							</DataTemplate>
 						</ListBox.ItemTemplate>

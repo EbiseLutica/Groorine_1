@@ -1,7 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
+using GroorineCore.Events;
+using GroorineCore.Helpers;
 
-namespace GroorineCore
+namespace GroorineCore.DataModel
 {
 	/// <summary>
 	/// Groorine プロジェクトファイルのデータ構造を表現します。
@@ -94,12 +96,16 @@ namespace GroorineCore
 		internal GroorineFile(ConductorTrack ct, ObservableCollection<Track> tracks, short resolution, string title, string copyright, long? loopStart = null)
 		{
 			Tracks = tracks;
+
+			foreach (Track t in tracks)
+				foreach (NoteEvent ne in t.Events.OfType<NoteEvent>().Where(e => e.Channel == 9 && e.Gate < resolution))
+					ne.Gate = resolution;
 			Resolution = resolution;
 			Title = title;
 			Copyright = copyright;
 			Conductor = ct;
 			LoopStart = loopStart;
-
+			
 			if (Tracks?.Count > 0)
 				Length = Tracks.Max(mt => mt.Length);
 		}

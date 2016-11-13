@@ -1,83 +1,74 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-using PCLExt.FileStorage;
 using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using GroorineCore.Api;
+using GroorineCore.DataModel;
+using GroorineCore.Helpers;
 
-namespace GroorineCore
+namespace GroorineCore.Synth
 {
 	public class InstrumentList : List<IInstrument>
 	{
-		public IEnumerable<IInstrument> FindInstrumentsByNote(byte noteNo) => from i in this
-																			   where i.KeyRange.Contains(noteNo)
-																			   select i;
-		public IEnumerable<IInstrument> FindInstrumentsByVelocity(byte velocity) => from i in this
-																					where i.VelocityRange.Contains(velocity)
-																					select i;
-		public IEnumerable<IInstrument> FindInstruments(byte noteNo, byte velocity) => from i in this
-																					   where i.VelocityRange.Contains(velocity) && i.KeyRange.Contains(noteNo)
-																					   select i;
+		public IEnumerable<IInstrument> FindInstrumentsByNote(byte noteNo) => this.Where(i => i.KeyRange.Contains(noteNo));
+		public IEnumerable<IInstrument> FindInstrumentsByVelocity(byte velocity) => this.Where(i => i.VelocityRange.Contains(velocity));
+		public IEnumerable<IInstrument> FindInstruments(byte noteNo, byte velocity) => this.Where(i => i.KeyRange.Contains(noteNo) && i.VelocityRange.Contains(velocity));
 	}
 
 	public class AudioSourceManager
 	{
 		private static AudioSourceManager _instance;
-
-		//public InstrumentList[] Instruments { get; } = new InstrumentList[128];
+		
 		public IInstrument[] Instruments { get; } = new IInstrument[128];
 		public InstrumentList Drumset { get; } = new InstrumentList();
-		
 
 		private AudioSourceManager() { }
 
 		private void AddInstrument(byte ch, IInstrument inst)
 		{
 			if (inst == null)
-				throw new ArgumentNullException(nameof(inst));
+				return;
 			if (ch >= 128)
 				throw new ArgumentOutOfRangeException(nameof(ch));
-			/*if (Instruments[ch] == null)
-				Instruments[ch] = new InstrumentList();
-			if (Instruments[ch].Contains(inst))
-				return;
-			Instruments[ch].Add(inst);*/
 			Instruments[ch] = inst;
 		}
 		
 
-		private async Task InternalInitialize()
+		private async Task InternalInitializeAsync(IFileSystem fs, string resPath)
 		{
-			IFolder root = await FileSystem.Current.BaseStorage.GetFolderAsync("Presets");
+			IFolder root = await fs.BaseFolder.GetFolderAsync(Path.Combine(resPath, "Presets"));
 			if (root == null)
 				return;
 			IList<IFile> files = await (await root.GetFolderAsync("Inst")).GetFilesAsync();
-			if (files == null)
-				return;
-
-			foreach (IFile f in files)
+			if (files != null)
 			{
-				var fileName = Path.GetFileNameWithoutExtension(f.Path);
-				if (!byte.TryParse(fileName, out var ch))
-					continue;
-				
-				
-				// 現状拡張子のみで判断しているのでなんとかしたい
-				switch (Path.GetExtension(f.Path).ToLower().Remove(0, 1))
+
+				foreach (IFile f in files)
 				{
-					case "mssf":    // Music Sheet Sound File
-						Stream s = await f.OpenAsync(FileAccess.Read);
-						AddInstrument(ch, new Instrument(FileUtility.LoadMssf(s)));
-						break;
-					case "gsef":    // Groorine Sound Effect File
-						throw new NotImplementedException("GSEF ファイルはまだサポートされていません。");
-						break;
-					case "wav":     // Wave
-					case "wave":
-						throw new NotImplementedException("Wave ファイルはまだサポートされていません。");
-						break;
+					var fileName = Path.GetFileNameWithoutExtension(f.Path);
+					if (!byte.TryParse(fileName, out var ch))
+						continue;
+					
+					AddInstrument(ch, new Instrument(ch, await ReadAudioSourceFileAsync(f)));
 				}
 			}
+
+			files = await (await root.GetFolderAsync("Drum")).GetFilesAsync();
+			if (files != null)
+			{
+				foreach (IFile f in files)
+				{
+					var fileName = Path.GetFileNameWithoutExtension(f.Path);
+					if (!byte.TryParse(fileName, out var ch))
+						continue;
+
+
+					Drumset?.Add(new Instrument(ch, await ReadAudioSourceFileAsync(f)));
+				}
+
+			}
+
 
 			for (byte i = 0; i < Instruments.Length; i++)
 			{
@@ -90,13 +81,44 @@ namespace GroorineCore
 
 		}
 
-		public static async Task<AudioSourceManager> GetInstance()
+		private static async Task<IAudioSource> ReadAudioSourceFileAsync(IFile f)
+		{
+
+			Stream s = await f.OpenAsync(FileAccessMode.Read);
+			if (s == null)
+				return null;
+
+			// 現状拡張子のみで判断しているけどもっと良い方法ないかな
+			switch (Path.GetExtension(f.Path).ToLower().Remove(0, 1))
+			{
+				case "mssf":    // Music Sheet Sound File
+					return FileUtility.LoadMssf(s);
+
+				case "gsef":    // Groorine Sound Effect File
+					throw new NotImplementedException("GSEF ファイルはまだサポートされていません。");
+
+				case "wav":
+				case "wave":// Wave
+					return new AudioSourceWav(s);
+
+				default:
+					throw new InvalidOperationException("サポートされていないファイルです。");
+			}
+		}
+
+		public static async Task<AudioSourceManager> InitializeAsync(IFileSystem fileSystem, string resPath = "")
+		{
+			if (fileSystem == null)
+				throw new ArgumentNullException(nameof(fileSystem));
+			_instance = new AudioSourceManager();
+			await _instance.InternalInitializeAsync(fileSystem, resPath);
+			return _instance;
+		}
+
+		public static AudioSourceManager GetInstance()
 		{
 			if (_instance == null)
-			{
-				_instance = new AudioSourceManager();
-				await _instance.InternalInitialize();
-			}
+				throw new InvalidOperationException("初期化されていません。");
 			return _instance;
 		}
 	}

@@ -29,6 +29,7 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
     <WarningLevel>3</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -41,6 +42,7 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|ARM'">
     <DebugSymbols>true</DebugSymbols>
@@ -52,6 +54,7 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|ARM'">
     <OutputPath>bin\ARM\Release\</OutputPath>
@@ -64,6 +67,7 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -76,6 +80,7 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
     <WarningLevel>3</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -88,9 +93,125 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
     <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <Content Include="Presets\Inst\0.mssf" />
+    <Content Include="Presets\Inst\1.mssf" />
+    <Content Include="Presets\Inst\10.mssf" />
+    <Content Include="Presets\Inst\100.mssf" />
+    <Content Include="Presets\Inst\105.mssf" />
+    <Content Include="Presets\Inst\106.mssf" />
+    <Content Include="Presets\Inst\107.mssf" />
+    <Content Include="Presets\Inst\108.mssf" />
+    <Content Include="Presets\Inst\11.mssf" />
+    <Content Include="Presets\Inst\110.mssf" />
+    <Content Include="Presets\Inst\112.mssf" />
+    <Content Include="Presets\Inst\113.mssf" />
+    <Content Include="Presets\Inst\114.mssf" />
+    <Content Include="Presets\Inst\115.mssf" />
+    <Content Include="Presets\Inst\116.mssf" />
+    <Content Include="Presets\Inst\117.mssf" />
+    <Content Include="Presets\Inst\118.mssf" />
+    <Content Include="Presets\Inst\119.mssf" />
+    <Content Include="Presets\Inst\12.mssf" />
+    <Content Include="Presets\Inst\120.mssf" />
+    <Content Include="Presets\Inst\121.mssf" />
+    <Content Include="Presets\Inst\122.mssf" />
+    <Content Include="Presets\Inst\123.mssf" />
+    <Content Include="Presets\Inst\124.mssf" />
+    <Content Include="Presets\Inst\125.mssf" />
+    <Content Include="Presets\Inst\126.mssf" />
+    <Content Include="Presets\Inst\127.mssf" />
+    <Content Include="Presets\Inst\13.mssf" />
+    <Content Include="Presets\Inst\14.mssf" />
+    <Content Include="Presets\Inst\15.mssf" />
+    <Content Include="Presets\Inst\16.mssf" />
+    <Content Include="Presets\Inst\17.mssf" />
+    <Content Include="Presets\Inst\18.mssf" />
+    <Content Include="Presets\Inst\19.mssf" />
+    <Content Include="Presets\Inst\2.mssf" />
+    <Content Include="Presets\Inst\20.mssf" />
+    <Content Include="Presets\Inst\21.mssf" />
+    <Content Include="Presets\Inst\22.mssf" />
+    <Content Include="Presets\Inst\23.mssf" />
+    <Content Include="Presets\Inst\24.mssf" />
+    <Content Include="Presets\Inst\25.mssf" />
+    <Content Include="Presets\Inst\26.mssf" />
+    <Content Include="Presets\Inst\27.mssf" />
+    <Content Include="Presets\Inst\28.mssf" />
+    <Content Include="Presets\Inst\29.mssf" />
+    <Content Include="Presets\Inst\3.mssf" />
+    <Content Include="Presets\Inst\30.mssf" />
+    <Content Include="Presets\Inst\31.mssf" />
+    <Content Include="Presets\Inst\32.mssf" />
+    <Content Include="Presets\Inst\33.mssf" />
+    <Content Include="Presets\Inst\34.mssf" />
+    <Content Include="Presets\Inst\35.mssf" />
+    <Content Include="Presets\Inst\36.mssf" />
+    <Content Include="Presets\Inst\37.mssf" />
+    <Content Include="Presets\Inst\38.mssf" />
+    <Content Include="Presets\Inst\39.mssf" />
+    <Content Include="Presets\Inst\4.mssf" />
+    <Content Include="Presets\Inst\40.mssf" />
+    <Content Include="Presets\Inst\41.mssf" />
+    <Content Include="Presets\Inst\42.mssf" />
+    <Content Include="Presets\Inst\43.mssf" />
+    <Content Include="Presets\Inst\44.mssf" />
+    <Content Include="Presets\Inst\45.mssf" />
+    <Content Include="Presets\Inst\46.mssf" />
+    <Content Include="Presets\Inst\47.mssf" />
+    <Content Include="Presets\Inst\48.mssf" />
+    <Content Include="Presets\Inst\49.mssf" />
+    <Content Include="Presets\Inst\5.mssf" />
+    <Content Include="Presets\Inst\50.mssf" />
+    <Content Include="Presets\Inst\51.mssf" />
+    <Content Include="Presets\Inst\52.mssf" />
+    <Content Include="Presets\Inst\53.mssf" />
+    <Content Include="Presets\Inst\54.mssf" />
+    <Content Include="Presets\Inst\55.mssf" />
+    <Content Include="Presets\Inst\56.mssf" />
+    <Content Include="Presets\Inst\57.mssf" />
+    <Content Include="Presets\Inst\58.mssf" />
+    <Content Include="Presets\Inst\59.mssf" />
+    <Content Include="Presets\Inst\6.mssf" />
+    <Content Include="Presets\Inst\60.mssf" />
+    <Content Include="Presets\Inst\61.mssf" />
+    <Content Include="Presets\Inst\62.mssf" />
+    <Content Include="Presets\Inst\63.mssf" />
+    <Content Include="Presets\Inst\64.mssf" />
+    <Content Include="Presets\Inst\65.mssf" />
+    <Content Include="Presets\Inst\66.mssf" />
+    <Content Include="Presets\Inst\67.mssf" />
+    <Content Include="Presets\Inst\68.mssf" />
+    <Content Include="Presets\Inst\69.mssf" />
+    <Content Include="Presets\Inst\7.mssf" />
+    <Content Include="Presets\Inst\70.mssf" />
+    <Content Include="Presets\Inst\71.mssf" />
+    <Content Include="Presets\Inst\72.mssf" />
+    <Content Include="Presets\Inst\73.mssf" />
+    <Content Include="Presets\Inst\74.mssf" />
+    <Content Include="Presets\Inst\75.mssf" />
+    <Content Include="Presets\Inst\76.mssf" />
+    <Content Include="Presets\Inst\77.mssf" />
+    <Content Include="Presets\Inst\78.mssf" />
+    <Content Include="Presets\Inst\79.mssf" />
+    <Content Include="Presets\Inst\8.mssf" />
+    <Content Include="Presets\Inst\80.mssf" />
+    <Content Include="Presets\Inst\81.mssf" />
+    <Content Include="Presets\Inst\82.mssf" />
+    <Content Include="Presets\Inst\83.mssf" />
+    <Content Include="Presets\Inst\84.mssf" />
+    <Content Include="Presets\Inst\85.mssf" />
+    <Content Include="Presets\Inst\86.mssf" />
+    <Content Include="Presets\Inst\87.mssf" />
+    <Content Include="Presets\Inst\88.mssf" />
+    <Content Include="Presets\Inst\89.mssf" />
+    <Content Include="Presets\Inst\9.mssf" />
+    <Content Include="Presets\Inst\90.mssf" />
+    <Content Include="Presets\Inst\98.mssf" />
+    <Content Include="Presets\Inst\99.mssf" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
@@ -123,6 +244,35 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Hello, Groorine.mid" />
+    <Content Include="Presets\Drum\31.wav" />
+    <Content Include="Presets\Drum\35.wav" />
+    <Content Include="Presets\Drum\36.wav" />
+    <Content Include="Presets\Drum\37.wav" />
+    <Content Include="Presets\Drum\38.wav" />
+    <Content Include="Presets\Drum\39.wav" />
+    <Content Include="Presets\Drum\40.wav" />
+    <Content Include="Presets\Drum\41.wav" />
+    <Content Include="Presets\Drum\42.wav" />
+    <Content Include="Presets\Drum\43.wav" />
+    <Content Include="Presets\Drum\44.wav" />
+    <Content Include="Presets\Drum\45.wav" />
+    <Content Include="Presets\Drum\46.wav" />
+    <Content Include="Presets\Drum\47.wav" />
+    <Content Include="Presets\Drum\48.wav" />
+    <Content Include="Presets\Drum\49.wav" />
+    <Content Include="Presets\Drum\50.wav" />
+    <Content Include="Presets\Drum\51.wav" />
+    <Content Include="Presets\Drum\52.wav" />
+    <Content Include="Presets\Drum\54.wav" />
+    <Content Include="Presets\Drum\55.wav" />
+    <Content Include="Presets\Drum\57.wav" />
+    <Content Include="Presets\Drum\59.wav" />
+    <Content Include="Presets\Drum\63.wav" />
+    <Content Include="Presets\Drum\64.wav" />
+    <Content Include="Presets\Drum\78.wav" />
+    <Content Include="Presets\Drum\79.wav" />
+    <Content Include="Presets\Drum\80.wav" />
+    <Content Include="Presets\Drum\81.wav" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -162,6 +312,62 @@
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug Without PCL|x86'">
+    <OutputPath>bin\x86\Debug Without PCL\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug Without PCL|ARM'">
+    <OutputPath>bin\ARM\Debug Without PCL\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug Without PCL|x64'">
+    <OutputPath>bin\x64\Debug Without PCL\</OutputPath>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Client Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Client Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <NoWarn>;2008</NoWarn>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Client Debug|ARM'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\ARM\Client Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS</DefineConstants>
+    <NoWarn>;2008</NoWarn>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>ARM</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Client Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Client Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NETFX_CORE;WINDOWS_UWP;CODE_ANALYSIS;CODE_ANALYSIS</DefineConstants>
+    <WarningLevel>3</WarningLevel>
+    <NoWarn>;2008</NoWarn>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

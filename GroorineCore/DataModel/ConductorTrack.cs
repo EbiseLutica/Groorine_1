@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using GroorineCore.Events;
+using GroorineCore.Helpers;
 
-namespace GroorineCore
+namespace GroorineCore.DataModel
 {
 	public class ConductorTrack : BindableBase
 	{
 		private ObservableCollection<MetaEvent> _events;
-		private string _name;
 
 		private long _length;
 		private short _resolution;
@@ -35,20 +36,21 @@ namespace GroorineCore
 		}
 
 
-		private int? _msec = null;
+		private int? _msec;
 		private int _toTickCache;
 		public int ToTick(int msec)
 		{
+			
 			if (_msec is int ms && ms == msec)
 				return _toTickCache;
 			if (msec < 0)
 				throw new ArgumentOutOfRangeException(nameof(msec));
-			ScoreTempo scoreTempo = TempoMap.FindLast((ScoreTempo obj) => obj.MilliSeconds <= msec);
+			ScoreTempo scoreTempo = TempoMap.FindLast(obj => obj.MilliSeconds <= msec);
 			_msec = msec;
 			return _toTickCache = scoreTempo.Tick + GetTickLength(msec - scoreTempo.MilliSeconds, scoreTempo.Tempo, _resolution);
 		}
 
-		private int? _tick = null;
+		private int? _tick;
 		private int _toMilliSecCache;
 		public int ToMilliSeconds(int tick)
 		{
@@ -56,7 +58,7 @@ namespace GroorineCore
 				return _toMilliSecCache;
 			if (tick < 0)
 				throw new ArgumentOutOfRangeException(nameof(tick));
-			ScoreTempo scoreTempo = TempoMap.FindLast((ScoreTempo obj) => obj.Tick <= tick);
+			ScoreTempo scoreTempo = TempoMap.FindLast(obj => obj.Tick <= tick);
 			_tick = tick;
 			return _toMilliSecCache = scoreTempo.MilliSeconds + GetMilliSeconds(tick - scoreTempo.Tick, scoreTempo.Tempo, _resolution);
 		}

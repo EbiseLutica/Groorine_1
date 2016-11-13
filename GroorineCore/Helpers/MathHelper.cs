@@ -1,7 +1,6 @@
 ﻿using System;
-using static System.Math;
 
-namespace GroorineCore
+namespace GroorineCore.Helpers
 {
 	public static class MathHelper
 	{
@@ -15,6 +14,6 @@ namespace GroorineCore
 
 		public static double Linear(double time, double timeStart, double timeEnd, double start, double end) => Linear((time - timeStart) / (timeEnd - timeStart), start, end);
 
-		public static double ToRadian(double degree) => degree / 180 * PI;
+		public static double ToRadian(double degree) => degree / 180 * Math.PI;
 	}
 }

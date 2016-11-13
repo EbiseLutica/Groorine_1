@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace GroorineCore
+﻿namespace GroorineCore.Events
 {
 
 	public class TempoEvent : MetaEvent

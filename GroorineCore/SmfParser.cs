@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
 using System.Text;
-using static GroorineCore.MidiTimingConverter;
+using GroorineCore.DataModel;
+using GroorineCore.Events;
+using GroorineCore.Helpers;
+using static GroorineCore.Helpers.MidiTimingConverter;
 
 namespace GroorineCore
 {
@@ -20,32 +22,33 @@ namespace GroorineCore
 			var copyright = "";
 			long? loopStart = null;
 			var metas = new ObservableCollection<MetaEvent>();
-			
+
 			using (var br = new BinaryReader(data, Encoding.UTF8))
 			{
-				
+
 				// Magic Number MThd
 				if (new string(br.ReadChars(4)) != "MThd")
 				{
 					throw new ArgumentException("SMF ファイルではないファイルを読み込もうとしました");
 				}
 
-				var chunklen = br.ReadInt32BE();
-				var format = br.ReadInt16BE();
-				var trackNum = br.ReadInt16BE();
-				var resolution = br.ReadInt16BE();
-				
+				var chunklen = br.ReadInt32Be();
+				var format = br.ReadInt16Be();
+				var trackNum = br.ReadInt16Be();
+				var resolution = br.ReadInt16Be();
+
 				//Debug.WriteLine($"MThd: {chunklen} {format} {trackNum} {resolution}");
 				for (var i = 0; i < trackNum; i++)
 				{
 					//Debug.WriteLine($"{i} / {trackNum}");
 					br.ReadBytes(4);
 					//Debug.WriteLine("MTrk");
-					var size = br.ReadInt32BE();
+					var size = br.ReadInt32Be();
 					//Debug.WriteLine($"Size: {size}");
 					var events = new ObservableCollection<MidiEvent>();
 					Track mt;
 					tracks.Add(mt = new Track(events));
+					mt.Name = $"Track {i + 1}";
 					var noteDic = new Dictionary<byte, NoteEvent>();
 					var btype = 0;
 					var tick = 0;
@@ -66,21 +69,41 @@ namespace GroorineCore
 								var type = br.ReadByte();
 								var len = br.ReadVariableLength(ref j);
 								byte[] d = br.ReadBytes(len);
-								char[] moji = (from el in d
-									select (char) el).ToArray();
-								
+								var moji = Encoding.UTF8.GetString(d, 0, len);
+
 								//Debug.WriteLine($"MetaEvent {type:x} {len:x} {new string(moji)}");
 								j++;
 								j += len;
 								switch (type)
 								{
+									case 0x01:
+										events.Add(new CommentEvent(moji)
+										{
+											Tick = tick
+										});
+										break;
 									case 0x02:
-										copyright = new string(moji);
+										copyright = moji;
 										break;
 									case 0x03:
-										mt.Name = new string(moji);
+										if (moji != "")
+										{
+											mt.Name = moji;
+										}
 										if (i == 0)
-											title = new string(moji);
+											title = moji;
+										break;
+									case 0x05:
+										events.Add(new LyricsEvent(moji)
+										{
+											Tick = tick
+										});
+										break;
+									case 0x2F:
+										events.Add(new EndOfTrackEvent
+										{
+											Tick = tick
+										});
 										break;
 									case 0x51:
 										metas.Add(new TempoEvent
@@ -98,6 +121,7 @@ namespace GroorineCore
 										}
 										metas.Add(new BeatEvent
 										{
+											Tick = tick,
 											Rhythm = d[0],
 											Note = Pow(2, d[1])
 										});
@@ -109,13 +133,24 @@ namespace GroorineCore
 								len = br.ReadVariableLength(ref j);
 								d = br.ReadBytes(len);
 								j += len;
+								events.Add(new SysExEvent
+								{
+									Data = d,
+									Tick = tick
+								});
 								break;
 							case 0xF0:
 								// SysEx
-								len = br.ReadVariableLength(ref j);
+								len = br.ReadVariableLength(ref j) - 1;
 								d = br.ReadBytes(len);
 								br.ReadByte();
 								j += len + 1;
+
+								events.Add(new SysExEvent
+								{
+									Data = d,
+									Tick = tick
+								});
 								break;
 							default:
 								// Other
@@ -307,22 +342,15 @@ namespace GroorineCore
 											}
 										}
 										break;
-
+								
 								}
 								btype = type;
 								break;
 						}
 					}
 				}
-				return new GroorineFile(new ConductorTrack(metas, resolution), tracks, resolution, title, copyright);
+				return new GroorineFile(new ConductorTrack(metas, resolution), tracks, resolution, title, copyright, loopStart);
 			}
-
-			//塩基[] 塩基配列 = {A, G, C, T, A, A, T, G, G, T, C, A, C, C, A, G, G, T};
-
-			
 		}
-
-		
-
 	}
 }

@@ -1,4 +1,7 @@
-﻿namespace GroorineCore
+﻿using GroorineCore.Events;
+using GroorineCore.Helpers;
+
+namespace GroorineCore.DataModel
 {
 
 
@@ -35,8 +38,8 @@
 		{
 			get { return _sampleTick; }
 			set { SetProperty(ref _sampleTick, value); }
-
 		}
+		
 
 		public long Gate { get; }
 

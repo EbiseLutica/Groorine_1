@@ -1,4 +1,6 @@
-﻿namespace GroorineCore
+﻿using GroorineCore.Helpers;
+
+namespace GroorineCore.Events
 {
 	public abstract class MidiEvent : BindableBase
 	{

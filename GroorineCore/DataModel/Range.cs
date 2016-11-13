@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using GroorineCore.Helpers;
 
-namespace GroorineCore
+namespace GroorineCore.DataModel
 {
 	/// <summary>
 	/// 任意の比較可能な型の特定の範囲を表します。

@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using GroorineCore.Events;
+using GroorineCore.Helpers;
 
-namespace GroorineCore
+namespace GroorineCore.DataModel
 {
 	/// <summary>
 	/// Groorine プロジェクト内の、MIDI イベントが含まれたトラックを表現します。

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace GroorineCore
+namespace GroorineCore.Helpers
 {
 	internal static class ReaderExtensions
 	{
@@ -11,16 +11,18 @@ namespace GroorineCore
 			Array.Reverse(b);
 			return b;
 		}
+		
+		public static string ReadString(this BinaryReader binRdr, int length) => new string(binRdr?.ReadChars(length));
 
 		public static bool And(int a, int b) => (a & b) == b;
 
-		public static ushort ReadUInt16BE(this BinaryReader binRdr) => BitConverter.ToUInt16(binRdr.ReadBytesRequired(sizeof(ushort)).Reverse(), 0);
+		public static ushort ReadUInt16Be(this BinaryReader binRdr) => BitConverter.ToUInt16(binRdr.ReadBytesRequired(sizeof(ushort)).Reverse(), 0);
 
-		public static short ReadInt16BE(this BinaryReader binRdr) => BitConverter.ToInt16(binRdr.ReadBytesRequired(sizeof(short)).Reverse(), 0);
+		public static short ReadInt16Be(this BinaryReader binRdr) => BitConverter.ToInt16(binRdr.ReadBytesRequired(sizeof(short)).Reverse(), 0);
 
-		public static uint ReadUInt32BE(this BinaryReader binRdr) => BitConverter.ToUInt32(binRdr.ReadBytesRequired(sizeof(uint)).Reverse(), 0);
+		public static uint ReadUInt32Be(this BinaryReader binRdr) => BitConverter.ToUInt32(binRdr.ReadBytesRequired(sizeof(uint)).Reverse(), 0);
 
-		public static int ReadInt32BE(this BinaryReader binRdr) => BitConverter.ToInt32(binRdr.ReadBytesRequired(sizeof(int)).Reverse(), 0);
+		public static int ReadInt32Be(this BinaryReader binRdr) => BitConverter.ToInt32(binRdr.ReadBytesRequired(sizeof(int)).Reverse(), 0);
 
 		public static int ReadVariableLength(this BinaryReader br, ref int count)
 		{

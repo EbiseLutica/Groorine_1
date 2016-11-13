@@ -1,4 +1,4 @@
-﻿namespace GroorineCore
+﻿namespace GroorineCore.Events
 {
 	public class PitchEvent : MidiEvent
 	{

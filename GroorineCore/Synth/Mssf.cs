@@ -1,6 +1,8 @@
 ﻿using System;
-using static GroorineCore.MathHelper;
-namespace GroorineCore
+using GroorineCore.DataModel;
+using GroorineCore.Helpers;
+
+namespace GroorineCore.Synth
 {
 
 	public class Mssf : IAudioSource
@@ -29,20 +31,22 @@ namespace GroorineCore
 			Wave = wave;
 			Envelope = envelope;
 			Pan = pan;
+			
 		}
 
 
-		public (float l, float r) GetSample(int index, double sampleRate, double freq)
+		public (short l, short r) GetSample(int index, double sampleRate)
 		{
-			var time = MidiTimingConverter.getTime(index, (int)sampleRate);
-			var cycle = sampleRate / freq;
-			if (cycle == 0)
-				return (0, 0);
+			var time = MidiTimingConverter.GetTime(index, (int)sampleRate);
+			//var cycle = sampleRate / freq;
+			//if (cycle == 0)
+			//	return (0, 0);
 
-			var i = (int)((index % (int)cycle) * (32 / cycle));
+			var i = (int)((index % (100)) * (32 / 100d));
+			//var i = index;
 			if (i > 31)
 				i -= 32;
-			var o = Wave[i] / 32768f;
+			var o = Wave[i];
 			float vol;
 			EnvelopeFlag flag = EnvelopeFlag.Attack;
 			if (time > Envelope.A)
@@ -52,10 +56,10 @@ namespace GroorineCore
 			switch (flag)
 			{
 				case EnvelopeFlag.Attack:
-					vol = (float)Linear(time, 0, Envelope.A, 0, 1);
+					vol = (float)MathHelper.Linear(time, 0, Envelope.A, 0, 1);
 					break;
 				case EnvelopeFlag.Decay:
-					vol = (float)Linear(time, Envelope.A + 1, Envelope.D, 1, Envelope.S / 255d);
+					vol = (float)MathHelper.Linear(time, Envelope.A + 1, Envelope.D, 1, Envelope.S / 255d);
 					break;
 				case EnvelopeFlag.Sustain:
 					vol = Envelope.S / 255f;
@@ -66,7 +70,7 @@ namespace GroorineCore
 					vol = 0;
 					break;
 			}
-			return (l: o * vol, r: o * vol);
+			return ((short)(o * vol), (short)(o * vol));
 
 		}
 	}

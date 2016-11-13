@@ -1,116 +1,126 @@
-﻿using GroorineCore;
-using NAudio;
-using NAudio.CoreAudioApi;
-using NAudio.Wave;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Media;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Markup;
+using GroorineCore.DataModel;
+using GroorineCore.DotNet45;
+using GC = GroorineCore;
 
 namespace GroorineTest
 {
 
-
 	class Program
 	{
 
-		static BufferedWaveProvider bwp;
-		static Player player;
+		static Player _player;
+		private static bool _useAutoPlay;
 		static void Main(string[] args)
 		{
-			
-			bwp = new BufferedWaveProvider(new WaveFormat(44100, 16, 2));
-			var mde = new MMDeviceEnumerator();
-			MMDevice mmDevice = mde.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-			
-			player = new Player(50);
-			//player.BufferCallBack += Player_BufferCallBack;
-			//player.Play();
+			Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
 
-#pragma warning disable CS4014 // この呼び出しを待たないため、現在のメソッドの実行は、呼び出しが完了する前に続行します
-			Playing();
-#pragma warning restore CS4014 // この呼び出しを待たないため、現在のメソッドの実行は、呼び出しが完了する前に続行します
 
-			using (IWavePlayer wavPlayer = new WasapiOut(mmDevice, AudioClientShareMode.Shared, false, 100))
+			Console.WriteLine(@"Groorine Test Console");
+
+			Console.Write("Do you want to use auto play?(Y/N) >");
+			var r = Console.ReadKey();
+			_useAutoPlay = r.Key == ConsoleKey.Y;
+
+			string Arrow(int length, double rate)
 			{
-				wavPlayer.Init(bwp);
-				wavPlayer.Play();
-				Console.WriteLine("キーを押すと終了");
-				Console.CancelKeyPress += (sender, e) =>
-				{
-					//player.Stop();
-					wavPlayer.Stop();
-					Environment.Exit(0);
-				};
-				for (;;)
-				{
-					Thread.Sleep(1);
-					//Console.Write($"{bwp.BufferedBytes}\t\t{bwp.BufferLength}\t\t{player.Time}\t\t{player.CurrentFile?.Length}\t\t{delta}\t\r");
-					Console.SetCursorPosition(0, 0);
-					foreach (Tone t in Player.Track.Tones)
-						if (t != null)
-							Console.WriteLine($"CH{t.Channel} ♪{t.NoteNum} V{t.Velocity} {Enum.GetName(typeof(EnvelopeFlag), t.EnvFlag)} G{t.Gate} ST{t.StartTick:###.0} T{t.Tick:###.0}");
-						else
-							Console.WriteLine();
-				}
+				int a = (int)(length * rate);
+				int b = length - a;
+				return (a > 1 ? new string('=', a - 1) : "") + (a > 0 ? ">" : "") + (b > 0 ? new string('-', b) : "");
 			}
 
-			
-		}
+			_player = new Player();
 
-		private static int delta;
+			Console.CancelKeyPress += async (s, e) =>
+			{
+				e.Cancel = true;
+				await _player.StopAsync();
+			};
 
-		private static async Task Playing()
-		{
-			player.Load(SmfParser.Parse(File.OpenRead("register-piano.mid")));
-			player.Play();
 			while (true)
 			{
-				var t = Environment.TickCount;
-				short[] buffer = await player.GetBufferAsync();
-				delta = Environment.TickCount - t;
-				var ms = new MemoryStream();
-				var size = buffer.Length * sizeof(short);
-				byte[] b = new byte[size];
-
-				unsafe
+				if (!Menu())
+					break;
+				Console.Clear();
+				do
 				{
-					fixed (short* psrc = &buffer[0])
-					{
-						using (var strmSrc = new UnmanagedMemoryStream((byte*)psrc, size))
-							strmSrc.Read(b, 0, size);
-					}
-				}
+					Console.SetCursorPosition(0, 0);
 
-				bwp.AddSamples(b, 0, size);
-				while (bwp.BufferedBytes > buffer.Length * 2)
-					await Task.Delay(1);
-				//await Task.Delay(1);
+
+					if (_player.CorePlayer.CurrentFile?.Length is long l)
+						Console.WriteLine($"|{Arrow(80, _player.CorePlayer.Tick / (double)l)}|");
+					foreach (var t in GC.Player.Track.Tones)
+						if (t != null)
+							Console.WriteLine(
+								$"CH{t.Channel:#0} ♪{t.NoteNum:##0} V{t.Velocity:##0} {Enum.GetName(typeof(EnvelopeFlag), t.EnvFlag).PadRight(7)} G{t.Gate:####0} ST{t.StartTick:##0.0} T{t.Tick:##0.0}");
+						else
+							Console.WriteLine();
+				} while (_player.IsPlaying);
+
 			}
+
 		}
 
-		private static void Player_BufferCallBack(object sender, short[] buffer)
+		static string[] _files;
+		private static int _ptr = -1;
+		static bool Menu()
+		{
+			_files = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory).Where(s => Path.GetExtension(s) == ".mid").Select(Path.GetFileName).ToArray();
+
+			if (!_useAutoPlay || _ptr == -1)
+			{
+				foreach ((string path, int index) fs in _files.Select((s, i) => (s, i)))
+					Console.WriteLine($"{fs.index})\t{fs.path}");
+				Console.WriteLine();
+				Console.Write("再生するものを選んでください(-1で終了) >");
+				while (!int.TryParse(Console.ReadLine(), out var a) || a >= _files.Length || a < 0)
+				{
+					Console.Write("ちゃんと選べ。 >");
+				}
+				_ptr = a;
+			}
+
+			_player.Play(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _files[_ptr]), _useAutoPlay ? 2 : -1, 8000);
+
+			if (_useAutoPlay)
+				_ptr++;
+			return true;
+		}
+
+		/*private static async Task Playing(CancellationToken ct)
 		{
 			
-			var ms = new MemoryStream();
-			var size = buffer.Length * sizeof(short);
-			byte[] b = new byte[size];
-			
-			unsafe
-			{
-				fixed (short* psrc = &buffer[0])
-				{
-					using (var strmSrc = new UnmanagedMemoryStream((byte*)psrc, size))
-						strmSrc.Read(b, 0, size);
-				}
-			}
 
-			bwp.AddSamples(b, 0, size);
-		}
+			Console.Clear();
+			while (true)
+			{
+				var ti = Environment.TickCount;
+				await player.GetBufferAsync(buffer);
+				delta = Environment.TickCount - ti;
+
+				if (!player.IsPlaying || ct.IsCancellationRequested)
+					break;
+
+				byte[] b = ToByte(buffer);
+				
+
+				bwp.AddSamples(b, 0, b.Length);
+
+				Console.SetCursorPosition(0, 0);
+				Console.WriteLine($"{bwp?.BufferedBytes:#######0} {bwp?.BufferLength:#######0} {player?.Time:#######0} {player?.CurrentFile?.Length:#######0} {delta:###0} {Player.Track.Tones.Count(t => t != null):#0}");
+				foreach (Tone t in Player.Track.Tones)
+					if (t != null)
+						Console.WriteLine($"CH{t.Channel:#0} ♪{t.NoteNum:##0} V{t.Velocity:##0} {Enum.GetName(typeof(EnvelopeFlag), t.EnvFlag).PadRight(7)} G{t.Gate:####0} ST{t.StartTick:##0.0} T{t.Tick:##0.0}");
+					else
+						Console.WriteLine();
+
+				while (bwp.BufferedBytes > buffer.Length * 4)
+					await Task.Delay(1);
+			}
+		}*/
+		
 	}
 }

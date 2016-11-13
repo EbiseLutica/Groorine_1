@@ -1,16 +1,19 @@
 ﻿using System;
+using System.Diagnostics;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
+using Windows.Globalization;
+using Windows.UI;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=402347&clcid=0x409
 
 namespace Groorine
 {
-	using Windows.UI;
-	using Windows.UI.ViewManagement;
 	/// <summary>
 	/// Provides application-specific behavior to supplement the default Application class.
 	/// </summary>
@@ -35,7 +38,7 @@ namespace Groorine
         {
 
 #if DEBUG
-            if (System.Diagnostics.Debugger.IsAttached)
+            if (Debugger.IsAttached)
             {
                 // This just gets in the way.
                 //this.DebugSettings.EnableFrameRateCounter = true;
@@ -64,7 +67,7 @@ namespace Groorine
             if (shell == null)
             {
                 // Create a AppShell to act as the navigation context and navigate to the first page
-	            shell = new MainPage {Language = Windows.Globalization.ApplicationLanguages.Languages[0]};
+	            shell = new MainPage {Language = ApplicationLanguages.Languages[0]};
 
 	            // Set the default language
 
@@ -83,7 +86,7 @@ namespace Groorine
             {
                 // When the navigation stack isn't restored, navigate to the first page
                 // suppressing the initial entrance animation.
-                shell.AppFrame.Navigate(typeof(PlaylistView), e.Arguments, new Windows.UI.Xaml.Media.Animation.SuppressNavigationTransitionInfo());
+                shell.AppFrame.Navigate(typeof(PlaylistView), e.Arguments, new SuppressNavigationTransitionInfo());
             }
 
             // Ensure the current window is active

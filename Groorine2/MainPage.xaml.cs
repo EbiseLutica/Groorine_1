@@ -1,11 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
+using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Groorine.Controls;
 using Groorine.View;
@@ -62,7 +65,7 @@ namespace Groorine
 
 				CheckTogglePaneButtonSizeChanged();
 
-				Windows.ApplicationModel.Core.CoreApplicationViewTitleBar titleBar = Windows.ApplicationModel.Core.CoreApplication.GetCurrentView().TitleBar;
+				CoreApplicationViewTitleBar titleBar = CoreApplication.GetCurrentView().TitleBar;
 				titleBar.IsVisibleChanged += TitleBar_IsVisibleChanged;
 			};
 
@@ -91,7 +94,7 @@ namespace Groorine
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="args"></param>
-		private void TitleBar_IsVisibleChanged(Windows.ApplicationModel.Core.CoreApplicationViewTitleBar sender, object args)
+		private void TitleBar_IsVisibleChanged(CoreApplicationViewTitleBar sender, object args)
 		{
 			if (!_isPaddingAdded && sender.IsVisible)
 			{
@@ -118,30 +121,30 @@ namespace Groorine
 			FocusNavigationDirection direction = FocusNavigationDirection.None;
 			switch (e.Key)
 			{
-				case Windows.System.VirtualKey.Left:
-				case Windows.System.VirtualKey.GamepadDPadLeft:
-				case Windows.System.VirtualKey.GamepadLeftThumbstickLeft:
-				case Windows.System.VirtualKey.NavigationLeft:
+				case VirtualKey.Left:
+				case VirtualKey.GamepadDPadLeft:
+				case VirtualKey.GamepadLeftThumbstickLeft:
+				case VirtualKey.NavigationLeft:
 					direction = FocusNavigationDirection.Left;
 					break;
-				case Windows.System.VirtualKey.Right:
-				case Windows.System.VirtualKey.GamepadDPadRight:
-				case Windows.System.VirtualKey.GamepadLeftThumbstickRight:
-				case Windows.System.VirtualKey.NavigationRight:
+				case VirtualKey.Right:
+				case VirtualKey.GamepadDPadRight:
+				case VirtualKey.GamepadLeftThumbstickRight:
+				case VirtualKey.NavigationRight:
 					direction = FocusNavigationDirection.Right;
 					break;
 
-				case Windows.System.VirtualKey.Up:
-				case Windows.System.VirtualKey.GamepadDPadUp:
-				case Windows.System.VirtualKey.GamepadLeftThumbstickUp:
-				case Windows.System.VirtualKey.NavigationUp:
+				case VirtualKey.Up:
+				case VirtualKey.GamepadDPadUp:
+				case VirtualKey.GamepadLeftThumbstickUp:
+				case VirtualKey.NavigationUp:
 					direction = FocusNavigationDirection.Up;
 					break;
 
-				case Windows.System.VirtualKey.Down:
-				case Windows.System.VirtualKey.GamepadDPadDown:
-				case Windows.System.VirtualKey.GamepadLeftThumbstickDown:
-				case Windows.System.VirtualKey.NavigationDown:
+				case VirtualKey.Down:
+				case VirtualKey.GamepadDPadDown:
+				case VirtualKey.GamepadLeftThumbstickDown:
+				case VirtualKey.NavigationDown:
 					direction = FocusNavigationDirection.Down;
 					break;
 			}
@@ -316,7 +319,7 @@ namespace Groorine
 			if (RootSplitView.DisplayMode == SplitViewDisplayMode.Inline ||
 				RootSplitView.DisplayMode == SplitViewDisplayMode.Overlay)
 			{
-				Windows.UI.Xaml.Media.GeneralTransform transform = TogglePaneButton.TransformToVisual(this);
+				GeneralTransform transform = TogglePaneButton.TransformToVisual(this);
 				Rect rect = transform.TransformBounds(new Rect(0, 0, TogglePaneButton.ActualWidth, TogglePaneButton.ActualHeight));
 				TogglePaneButtonRect = rect;
 			}
