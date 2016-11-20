@@ -21,6 +21,8 @@ namespace GroorineCore
 		private long _time;
 		private bool _isPlaying;
 		private int _preTick;
+		private bool _isPausing;
+
 		/// <summary>
 		/// 現在の <see cref="Player"/> のサンプリング周波数を取得します。
 		/// </summary>
@@ -29,6 +31,8 @@ namespace GroorineCore
 		/// 読み込まれた Groorine プロジェクトファイルを取得します。
 		/// </summary>
 		public GroorineFile CurrentFile { get; private set; }
+
+
 
 		/// <summary>
 		/// ループ回数を取得します。
@@ -70,7 +74,7 @@ namespace GroorineCore
 			for (var i = 0; i < buf.Length; i += 2)
 			{
 				//time = getTime(i);
-				Time = (long)(firstTime + GetTime(i));
+				Time = (long)(firstTime + GetTime(i) + 0.5);
 				Tick = CurrentFile.Conductor.ToTick((int)Time);
 
 				if (CurrentFile != null)
@@ -85,7 +89,7 @@ namespace GroorineCore
 							firstTime = Time - GetTime(i);
 							if (LoopCount > 0)
 								LoopCount--;
-							if (LoopCount == 0)
+							if (LoopCount == 0 && FadeOutTick == null)
 								FadeOutTick = FadeOutTime;
 							ToneInit();
 						}
@@ -154,7 +158,7 @@ namespace GroorineCore
 		}
 
 
-		public short[] CreateBuffer(int latency) => new short[(int)(latency * SampleRate * 0.001 * 2)];
+		public short[] CreateBuffer(int latency) => new short[(int)(latency * SampleRate * 0.001) * 2];
 
 		/// <summary>
 		/// 指定したプロジェクトファイルを読み込み、再生の準備をします。現在再生中の場合は停止します。
@@ -167,11 +171,11 @@ namespace GroorineCore
 				return;
 			Stop();
 			CurrentFile = gf;
-
+			OnPropertyChanged(nameof(MaxTime));
 			Tracks = new Track[Constants.MaxChannelCount];
 			for (var i = 0; i < Tracks.Length; i++)
 				Tracks[i] = new Track();
-
+			OnPropertyChanged(nameof(Tracks));
 
 		}
 
@@ -183,6 +187,14 @@ namespace GroorineCore
 		{
 			get { return _time; }
 			set { SetProperty(ref _time, value); }
+		}
+
+		public long MaxTime => CurrentFile?.Conductor.ToMilliSeconds((int) CurrentFile.Length) ?? 0;
+
+		public bool IsPausing
+		{
+			get { return _isPausing; }
+			set { SetProperty(ref _isPausing, value); }
 		}
 
 		/// <summary>
@@ -202,6 +214,7 @@ namespace GroorineCore
 		public void Play(int loopCount = -1, int fadeOutTime = 2000)
 		{
 			IsPlaying = true;
+			IsPausing = false;
 			LoopCount = loopCount;
 			FadeOutTime = (int)(fadeOutTime * SampleRate * 0.001);
 		}
@@ -215,6 +228,7 @@ namespace GroorineCore
 			Time = 0;
 			ToneInit();
 			_preTick = -1;
+			IsPausing = false;
 			FadeOutTick = null;
 		}
 
@@ -225,12 +239,15 @@ namespace GroorineCore
 				Track.Tones[i] = null;
 		}
 
+
+
 		/// <summary>
 		/// 再生中の <see cref="Player"/> を一時停止します。 <see cref="Play()"/> を呼び出すと続きから再生します。
 		/// </summary>
 		public void Pause()
 		{
 			IsPlaying = false;
+			IsPausing = true;
 		}
 		
 
@@ -262,7 +279,7 @@ namespace GroorineCore
 			static Track()
 			{
 				Tones = new Tone[Constants.MaxToneCount];
-				FreqTable = Enumerable.Range(0, 128).Select(x => GetFreq(x)).ToArray();
+				FreqTable = Enumerable.Range(0, 128).Select(GetFreq).ToArray();
 				AudioTimers = new AudioTimer[Constants.MaxToneCount];
 				for (var i = 0; i < AudioTimers.Length; i++)
 					AudioTimers[i] = new AudioTimer();
@@ -384,9 +401,10 @@ namespace GroorineCore
 					return output;
 
 				var panrt = Channel.Panpot / 127f;
-				var a = 1f / Tones.Length;
+				var a = 4f / Tones.Length;
+				if (t.Channel == 9) a *= 2;
 
-				var kake = (Channel.Volume / 127f) * (Channel.Expression / 127f) * (t.Velocity / 127f) * (Min(t.SampleTick, 441) / 441f);
+				var kake = (Channel.Volume / 127f) * (Channel.Expression / 127f) * (t.Velocity / 127f) * a;
 
 				var freq = FreqTable[t.NoteNum] * Channel.FreqExts;
 				if (t.Channel == 9)
@@ -394,8 +412,8 @@ namespace GroorineCore
 				at.SetCycle(freq, sampleRate);
 
 				output = il.Source.GetSample(t.SampleTick, sampleRate);
-				output.Item1 = (short)(output.Item1 * kake * (1 - panrt) * a);
-				output.Item2 = (short)(output.Item2 * kake * panrt * a);
+				output.Item1 = (short)(output.Item1 * kake * (1 - panrt));
+				output.Item2 = (short)(output.Item2 * kake * panrt);
 
 				t.SampleTick = (int)at.Update();
 				return output;

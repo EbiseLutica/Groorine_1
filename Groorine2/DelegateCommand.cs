@@ -8,7 +8,7 @@ namespace Groorine
 	/// </summary> 
 	public class DelegateCommand : ICommand
 	{
-		private readonly Action _execute;
+		private readonly Action<object> _execute;
 
 		private readonly Func<bool> _canExecute;
 
@@ -17,7 +17,7 @@ namespace Groorine
 		/// 作成します。 
 		/// </summary> 
 		/// <param name="execute">Executeメソッドで実行する処理</param> 
-		public DelegateCommand(Action execute) : this(execute, () => true)
+		public DelegateCommand(Action<object> execute) : this(execute, () => true)
 		{
 		}
 
@@ -27,7 +27,7 @@ namespace Groorine
 		/// </summary> 
 		/// <param name="execute">Executeメソッドで実行する処理</param> 
 		/// <param name="canExecute">CanExecuteメソッドで実行する処理</param> 
-		public DelegateCommand(Action execute, Func<bool> canExecute)
+		public DelegateCommand(Action<object> execute, Func<bool> canExecute)
 		{
 			if (execute == null)
 			{
@@ -42,14 +42,7 @@ namespace Groorine
 			_execute = execute;
 			_canExecute = canExecute;
 		}
-
-		/// <summary> 
-		/// コマンドを実行します。 
-		/// </summary> 
-		public void Execute()
-		{
-			_execute();
-		}
+		
 
 		/// <summary> 
 		/// コマンドが実行可能な状態化どうか問い合わせます。 
@@ -76,7 +69,7 @@ namespace Groorine
 		/// <param name="parameter"></param> 
 		void ICommand.Execute(object parameter)
 		{
-			Execute();
+			_execute(parameter);
 		}
 
 		public event EventHandler CanExecuteChanged;

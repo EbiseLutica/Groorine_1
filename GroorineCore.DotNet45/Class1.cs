@@ -93,13 +93,14 @@ namespace GroorineCore.DotNet45
 		private async Task InitializeAsync(int sampleRate, int latency)
 		{
 			_bwp = new BufferedWaveProvider(new WaveFormat(44100, 16, 2));
-			var mde = new MMDeviceEnumerator();
-			var mmDevice = mde.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
+			//var mde = new MMDeviceEnumerator();
+			//var mmDevice = mde.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
 			await AudioSourceManager.InitializeAsync(new FileSystem());
 			CorePlayer = new GPlayer(sampleRate);
 			_buffer = CorePlayer.CreateBuffer(latency);
+			//_buffer = new short[882];
 			_cts = new CancellationTokenSource();
-			_nativeplayer = new WasapiOut(mmDevice, AudioClientShareMode.Shared, false, 100);
+			_nativeplayer = new WasapiOut(AudioClientShareMode.Shared, true, 100);
 			_nativeplayer.Init(_bwp);
 			_nativeplayer.Play();
 		}
@@ -122,48 +123,52 @@ namespace GroorineCore.DotNet45
 
 			CorePlayer.Load(SmfParser.Parse(F.OpenRead(P.Combine(AppDomain.CurrentDomain.BaseDirectory, filePath))));
 			
-			Play(loopCount, fadeOutTime);
+			PlayAsync(loopCount, fadeOutTime);
 		}
 		
 
-	    public async void Play(int loopCount = -1, int fadeOutTime = 2000)
+	    public async void PlayAsync(int loopCount = -1, int fadeOutTime = 2000)
 	    {
-			CorePlayer.Play(loopCount, fadeOutTime);
-
-			IsPlaying = true;
-			while (true)
+			await Task.Run(async () =>
 			{
-				CorePlayer.GetBuffer(_buffer);
+				CorePlayer.Play(loopCount, fadeOutTime);
 
-				if (!CorePlayer.IsPlaying || _cts.IsCancellationRequested)
-					break;
+				IsPlaying = true;
+				while (true)
+				{
+					CorePlayer.GetBuffer(_buffer);
 
-				var b = ToByte(_buffer);
+					if (!CorePlayer.IsPlaying || _cts.IsCancellationRequested)
+						break;
+
+					var b = ToByte(_buffer);
 
 
-				_bwp.AddSamples(b, 0, b.Length);
+					_bwp.AddSamples(b, 0, b.Length);
 
-				/*Console.SetCursorPosition(0, 0);
-				Console.WriteLine($"{bwp?.BufferedBytes:#######0} {bwp?.BufferLength:#######0} {player?.Time:#######0} {player?.CurrentFile?.Length:#######0} {delta:###0} {Player.Track.Tones.Count(t => t != null):#0}");
-				foreach (Tone t in Player.Track.Tones)
-					if (t != null)
-						Console.WriteLine($"CH{t.Channel:#0} ♪{t.NoteNum:##0} V{t.Velocity:##0} {Enum.GetName(typeof(EnvelopeFlag), t.EnvFlag).PadRight(7)} G{t.Gate:####0} ST{t.StartTick:##0.0} T{t.Tick:##0.0}");
-					else
-						Console.WriteLine();*/
+					/*Console.SetCursorPosition(0, 0);
+					Console.WriteLine($"{bwp?.BufferedBytes:#######0} {bwp?.BufferLength:#######0} {player?.Time:#######0} {player?.CurrentFile?.Length:#######0} {delta:###0} {Player.Track.Tones.Count(t => t != null):#0}");
+					foreach (Tone t in Player.Track.Tones)
+						if (t != null)
+							Console.WriteLine($"CH{t.Channel:#0} ♪{t.NoteNum:##0} V{t.Velocity:##0} {Enum.GetName(typeof(EnvelopeFlag), t.EnvFlag).PadRight(7)} G{t.Gate:####0} ST{t.StartTick:##0.0} T{t.Tick:##0.0}");
+						else
+							Console.WriteLine();*/
 
-				
-		
-			}
-			IsPlaying = false;
+					while (_bwp.BufferedBytes > _buffer.Length * 8)
+						await Task.Delay(1);
+
+				}
+				IsPlaying = false;
+			});
 		}
 
 	    public async Task StopAsync()
 		{
-			await Task.Run(() =>
+			await Task.Run(async () =>
 			{
 				CorePlayer.Stop();
 				while (IsPlaying)
-					;
+					await Task.Delay(1);
 			});
 		}
 

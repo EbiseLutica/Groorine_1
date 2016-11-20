@@ -21,10 +21,9 @@ using GroorineCore.Helpers;
 using GroorineCore.Synth;
 using FileAccessMode = GroorineCore.Api.FileAccessMode;
 using System.Diagnostics;
-using NAudio.CoreAudioApi;
-using NAudio.Wave;
-using NAudio.Wave.SampleProviders;
-using NAudio.Win8.Wave.WaveOutputs;
+using System.Threading;
+using Windows.UI.Core;
+using GroorineCore.DataModel;
 
 namespace Groorine
 {
@@ -39,9 +38,49 @@ namespace Groorine
 		void GetBuffer(out byte* buffer, out uint capacity);
 	}
 
+	public enum LoopMode
+	{
+		NoLoop, OneLoop, TwoLoop, InfiniteLoop
+	}
+
+	public class ChannelViewModel : BindableBase
+	{
+		private Channel _channel;
+		private IEnumerable<Tone> _tones;
+
+		public Channel Channel
+		{
+			get { return _channel; }
+			set { SetProperty(ref _channel, value); }
+		}
+
+		public IEnumerable<Tone> Tones
+		{
+			get { return _tones; }
+			set { SetProperty(ref _tones, value); }
+		}
+		
+
+		public int ChannelNo { get; }
+
+		public ChannelViewModel(int chNo, Player.Track track)
+		{
+			Channel = track.Channel as Channel;
+			ChannelNo = chNo;
+			Update();
+		}
+
+		public void Update()
+		{
+			Tones = Player.Track.Tones.Where(t => t?.Channel == ChannelNo);
+		}
+	}
+
 	public class MainPageViewModel : BindableBase
 	{
 		private GroorineFileViewModel _currentFile;
+
+		private readonly SynchronizationContext _synchronizationContext = SynchronizationContext.Current;
 
 		private bool _canStop;
 
@@ -49,6 +88,7 @@ namespace Groorine
 		private int _masterVolume;
 
 		private ObservableCollection<StorageFile> _musicFiles;
+
 		private long _musicPosition;
 
 		private int _resolution;
@@ -57,26 +97,81 @@ namespace Groorine
 		private bool _canPlay;
 
 		private Player _player;
-		private AudioGraph graph;
-		private AudioDeviceOutputNode deviceOutputNode;
-		private AudioFrameInputNode frameInputNode;
+		private AudioGraph _graph;
+		private AudioDeviceOutputNode _deviceOutputNode;
+		private AudioFrameInputNode _frameInputNode;
 
-		private IWavePlayer _nativePlayer;
-		private BufferedWaveProvider _bwp;
+		private LoopMode _loopMode;
 
+		public string LoopModeString
+		{
+			get
+			{
+				switch (_loopMode)
+				{
+					case LoopMode.NoLoop:
+						return "No Loop";
+					case LoopMode.OneLoop:
+						return "1 Time Loop";
+					case LoopMode.TwoLoop:
+						return "2 Times Loop";
+					case LoopMode.InfiniteLoop:
+						return "Infinite Loop";
+					default:
+						return "???";
+				}
+			}
+		}
 
+		public DelegateCommand DeleteCommand { get; private set; }
+
+		public ObservableCollection<ChannelViewModel> Channels
+		{
+			get { return _channels; }
+			set { SetProperty(ref _channels, value); }
+		}
 
 		private short[] _buffer;
 		private bool _isInitialized;
+		private ObservableCollection<ChannelViewModel> _channels;
 
 		public MainPageViewModel()
 		{
 			_musicFiles = new ObservableCollection<StorageFile>();
 			CurrentFile = new GroorineFileViewModel(null);
-
+			_channels = new ObservableCollection<ChannelViewModel>();
+			for (int i = 0; i < Constants.MaxChannelCount; i++)
+				_channels.Add(new ChannelViewModel(i, new Player.Track()));
 			//_player = new Player();
-			Initialize();
+			InitializeAsync();
+			DeleteCommand = new DelegateCommand(async (o) =>
+			{
+				if (!(o is StorageFile sf)) return;
+				MusicFiles.Remove(sf);
+				await sf.DeleteAsync();
+			});
+		}
 
+		public void ChangeLoopMode()
+		{
+			switch (_loopMode)
+			{
+				case LoopMode.NoLoop:
+					_loopMode = LoopMode.OneLoop;
+					break;
+				case LoopMode.OneLoop:
+					_loopMode = LoopMode.TwoLoop;
+					break;
+				case LoopMode.TwoLoop:
+					_loopMode = LoopMode.InfiniteLoop;
+					break;
+				case LoopMode.InfiniteLoop:
+					_loopMode = LoopMode.NoLoop;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+			OnPropertyChanged(nameof(LoopModeString));
 		}
 
 		public bool IsPlaying
@@ -122,8 +217,12 @@ namespace Groorine
 			set
 			{
 				if (value < 0) value = 0;
-				if (value > 127) value = 127;
+				if (value > 100) value = 100;
 				SetProperty(ref _masterVolume, value);
+				if (_deviceOutputNode is AudioDeviceOutputNode n)
+				{
+					n.OutgoingGain = value / 100d;
+				}
 			}
 		}
 
@@ -138,6 +237,8 @@ namespace Groorine
 			get { return _currentFile; }
 			set { SetProperty(ref _currentFile, value); }
 		}
+
+
 
 		public StorageFile SelectedMusic
 		{
@@ -164,7 +265,19 @@ namespace Groorine
 		{
 			IsPlaying = true;
 			CanStop = true;
-			_player.Play();
+			var loopCount =
+				_loopMode == LoopMode.NoLoop
+					? 0
+					: (
+						_loopMode == LoopMode.OneLoop
+							? 1
+							: (
+								_loopMode == LoopMode.TwoLoop
+									? 2
+									: -1
+							)
+					);
+			_player.Play(loopCount, 8000);
 		}
 
 
@@ -182,7 +295,7 @@ namespace Groorine
 			_player.Stop();
 		}
 
-		public async void Load()
+		public async void LoadAsync()
 		{
 			if (SelectedMusic == null) return;
 			Stop();
@@ -193,7 +306,9 @@ namespace Groorine
 			Play();
 		}
 
-		public async void ImportFromMidi()
+		
+
+		public async void ImportFromMidiAsync()
 		{
 			var filePicker = new FileOpenPicker {ViewMode = PickerViewMode.List};
 
@@ -229,13 +344,13 @@ namespace Groorine
 
 		}
 
-		public async void ExportToAudio()
+		public async void ExportToAudioAsync()
 		{
 			await new MessageDialog("Groorine is still in development ><", "That feature is not implement yet!").ShowAsync();
 		}
 
 
-		private async void Initialize()
+		private async void InitializeAsync()
 		{
 			IStorageItem rootDir = await ApplicationData.Current.RoamingFolder.TryGetItemAsync("Music");
 			var dir = rootDir as StorageFolder;
@@ -254,17 +369,17 @@ namespace Groorine
 
 			MasterVolume = 100;
 
-			await (await Package.Current.InstalledLocation.GetFolderAsync("Presets\\Inst")).GetFilesAsync();
-
 			await AudioSourceManager.InitializeAsync(new FileSystem(), "GroorineCore");
 
 
-			
-			var settings = new AudioGraphSettings(AudioRenderCategory.Media);
 
-			settings.QuantumSizeSelectionMode = QuantumSizeSelectionMode.ClosestToDesired;
-			settings.DesiredSamplesPerQuantum = 44100;
+			var settings = new AudioGraphSettings(AudioRenderCategory.Media)
+			{
+				DesiredRenderDeviceAudioProcessing = AudioProcessing.Default,
+				QuantumSizeSelectionMode = QuantumSizeSelectionMode.ClosestToDesired,
 
+				DesiredSamplesPerQuantum = 8820
+			};
 			var result = await AudioGraph.CreateAsync(settings);
 
 			if (result.Status != AudioGraphCreationStatus.Success)
@@ -272,43 +387,72 @@ namespace Groorine
 				await new MessageDialog("Can't create AudioGraph! Application will stop...").ShowAsync();
 				Application.Current.Exit();
 			}
-
-			graph = result.Graph;
 			
-			var deviceOutputNodeResult = await graph.CreateDeviceOutputNodeAsync();
+
+			_graph = result.Graph;
+			
+
+
+			var deviceOutputNodeResult = await _graph.CreateDeviceOutputNodeAsync();
 			if (deviceOutputNodeResult.Status != AudioDeviceNodeCreationStatus.Success)
 			{
 				await new MessageDialog("Can't create DeviceOutputNode! Application will stop...").ShowAsync();
 				Application.Current.Exit();
 			}
-			deviceOutputNode = deviceOutputNodeResult.DeviceOutputNode;
-		
-			var nodeEncodingProperties = graph.EncodingProperties;
+			_deviceOutputNode = deviceOutputNodeResult.DeviceOutputNode;
+			
+			var nodeEncodingProperties = _graph.EncodingProperties;
 			nodeEncodingProperties.ChannelCount = 2;
-			nodeEncodingProperties.SampleRate = 44100;
 
 			
-			frameInputNode = graph.CreateFrameInputNode(nodeEncodingProperties);
-			frameInputNode.AddOutgoingConnection(deviceOutputNode);
-			
-			frameInputNode.Stop();
+			_frameInputNode = _graph.CreateFrameInputNode(nodeEncodingProperties);
+			_frameInputNode.AddOutgoingConnection(_deviceOutputNode);
+		
+			_frameInputNode.Stop();
 			_player = new Player((int)nodeEncodingProperties.SampleRate);
 			
-			frameInputNode.QuantumStarted += (sender, args) =>
-			{
-				uint numSamplesNeeded = (uint) args.RequiredSamples;
 
+
+			_player.PropertyChanged += (sender, args) =>
+			{
+				switch (args.PropertyName)
+				{
+					case nameof(_player.IsPlaying):
+						_synchronizationContext.Post(o =>
+						{
+							if (!_player.IsPlaying && !_player.IsPausing && IsPlaying)
+								IsPlaying = CanStop = false;
+						}, null);
+						break;
+					case nameof(_player.Tracks):
+						_synchronizationContext.Post(o =>
+						{
+							Channels = new ObservableCollection<ChannelViewModel>(_player.Tracks.Select((t, i) => new ChannelViewModel(i, t)));
+						}, null);
+						break;
+				}
+			};
+			
+
+			_frameInputNode.QuantumStarted += (sender, args) =>
+			{
+				
+				uint numSamplesNeeded = (uint) args.RequiredSamples;
+				
 				if (numSamplesNeeded != 0)
 				{
-					AudioFrame audioData = GenerateAudioData(numSamplesNeeded);
-					frameInputNode.AddFrame(audioData);
+					//_synchronizationContext.Post(o =>
+					//{
+					//	foreach (var a in Channels)
+					//		a.Update();
+						AudioFrame audioData = GenerateAudioData(numSamplesNeeded);
+						_frameInputNode.AddFrame(audioData);
+					//}, null);
 				}
 			};
 
-			graph.Start();
-			frameInputNode.Start();
-		
-
+			_graph.Start();
+			_frameInputNode.Start();
 			/*
 			_player = new Player();
 
@@ -358,10 +502,8 @@ namespace Groorine
 			using (AudioBuffer buffer = frame.LockBuffer(AudioBufferAccessMode.Write))
 			using (IMemoryBufferReference reference = buffer.CreateReference())
 			{
-				byte* dataInBytes;
-				uint capacityInBytes;
 				float* dataInFloat;
-				((IMemoryBufferByteAccess) reference).GetBuffer(out dataInBytes, out capacityInBytes);
+				((IMemoryBufferByteAccess) reference).GetBuffer(out var dataInBytes, out uint capacityInBytes);
 				dataInFloat = (float*) dataInBytes;
 				_player.GetBuffer(_buffer);
 
@@ -369,6 +511,9 @@ namespace Groorine
 				{
 					dataInFloat[i] = _buffer[i] / 32767f;
 				}
+
+				foreach (float f in _buffer.Select(a => a / 32767f))
+					*dataInFloat++ = f;
 
 			}
 
@@ -393,9 +538,7 @@ namespace Groorine
 
 		public Folder(StorageFolder sf)
 		{
-			if (sf == null)
-				throw new ArgumentNullException(nameof(sf));
-			_folder = sf;
+			_folder = sf ?? throw new ArgumentNullException(nameof(sf));
 			Name = sf.Name;
 			Path = sf.Path;
 		}
@@ -419,9 +562,7 @@ namespace Groorine
 
 		public File(StorageFile file)
 		{
-			if (file == null)
-				throw new ArgumentNullException(nameof(file));
-			_file = file;
+			_file = file ?? throw new ArgumentNullException(nameof(file));
 			Path = file.Path;
 			Name = System.IO.Path.GetFileName(Path);
 		}

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace GroorineCore.Helpers
 {
@@ -8,6 +9,9 @@ namespace GroorineCore.Helpers
 	/// </summary>
 	public abstract class BindableBase : INotifyPropertyChanged
 	{
+
+		private SynchronizationContext _synchronizationContext = SynchronizationContext.Current;
+
 		/// <summary>
 		/// プロパティの変更を通知するためのマルチキャスト イベント。
 		/// </summary>

@@ -2,6 +2,7 @@
 using System.Linq;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation;
+using Windows.Foundation.Metadata;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -38,7 +39,15 @@ namespace Groorine
 					Symbol = Symbol.List,
 					Label = "MIDI Event",
 					DestPage = typeof(MidiEventView)
+				},
+				/* Many many bug bug Many hage hage 👊
+				new NavMenuItem
+				{
+					Symbol = Symbol.Play,
+					Label = "Playing",
+					DestPage = typeof(PlayingView)
 				}
+				*/
 			});
 
 		public static MainPage Current;
@@ -350,6 +359,14 @@ namespace Groorine
 				args.ItemContainer.ClearValue(AutomationProperties.NameProperty);
 			}
 		}
-		
+
+	    private void FrameworkElement_OnLoaded(object sender, RoutedEventArgs e)
+	    {
+			if (ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Controls.CommandBar", nameof(CommandBar.IsDynamicOverflowEnabled)))
+			{
+				var commandBar = sender as CommandBar;
+				if (commandBar != null) commandBar.IsDynamicOverflowEnabled = false;
+			}
+		}
     }
 }

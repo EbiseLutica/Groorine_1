@@ -172,9 +172,10 @@ namespace GroorineCore
 											Tick = tick
 										});*/
 
-										if (noteDic.ContainsKey(note))
+										if (vel == 0 && noteDic.ContainsKey(note))
 										{
 											noteDic[note].Gate = tick - noteDic[note].Tick;
+											events.Add(noteDic[note]);
 											noteDic.Remove(note);
 										}
 										if (vel > 0)

@@ -6,12 +6,17 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:storage="using:Windows.Storage"
-    mc:Ignorable="d">
+    mc:Ignorable="d" Name="ViewRoot">
 
-	<ListBox ItemsSource="{Binding MusicFiles}" SelectedItem="{Binding SelectedMusic, Mode=TwoWay}" Tapped="{x:Bind ViewModel.Load}">
+	<ListBox  ItemsSource="{Binding MusicFiles}" SelectedItem="{Binding SelectedMusic, Mode=TwoWay}" Tapped="{x:Bind ViewModel.LoadAsync}">
 		<ListBox.ItemTemplate>
-		<DataTemplate x:DataType="storage:StorageFile">
-				<StackPanel Orientation="Vertical">
+			<DataTemplate x:DataType="storage:StorageFile">
+				<StackPanel Orientation="Vertical" RightTapped="UIElement_OnRightTapped">
+					<FlyoutBase.AttachedFlyout>
+						<MenuFlyout>
+							<MenuFlyoutItem Command="{Binding ElementName=ViewRoot, Path=ViewModel.DeleteCommand}" CommandParameter="{x:Bind}">Delete</MenuFlyoutItem>
+						</MenuFlyout>
+					</FlyoutBase.AttachedFlyout>
 					<TextBlock Text="{x:Bind DisplayName}" FontWeight="Bold" Foreground="{StaticResource SystemControlBackgroundBaseHighBrush}"/>
 					<TextBlock Text="{x:Bind Path}" Foreground="{StaticResource SystemControlBackgroundBaseMediumBrush}"/>
 				</StackPanel>

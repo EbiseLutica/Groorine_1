@@ -1,7 +1,7 @@
 ﻿{
   "dependencies": {
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.2.2",
-    "NAudio": "1.7.3",
+    "Microsoft.Xaml.Behaviors.Uwp.Managed": "2.0.0",
     "System.ValueTuple": "4.3.0-preview1-24530-04"
   },
   "frameworks": {

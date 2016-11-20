@@ -1,5 +1,9 @@
 ﻿// 空白ページのアイテム テンプレートについては、http://go.microsoft.com/fwlink/?LinkId=234238 を参照してください
 
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Input;
+
 namespace Groorine
 {
 	/// <summary>
@@ -14,6 +18,13 @@ namespace Groorine
 		}
 
 		public MainPageViewModel ViewModel { get; set; }
-		
+
+
+		private void UIElement_OnRightTapped(object sender, RightTappedRoutedEventArgs e)
+		{
+			var senderElement = sender as FrameworkElement;
+			var flyoutBase = FlyoutBase.GetAttachedFlyout(senderElement);
+			flyoutBase.ShowAt(senderElement);
+		}
 	}
 }

@@ -96,29 +96,29 @@
 					<RowDefinition Height="*"/>
 				</Grid.RowDefinitions>
 
-				<CommandBar FlowDirection="LeftToRight" Background="Transparent">
+				<CommandBar Loaded="FrameworkElement_OnLoaded" FlowDirection="LeftToRight" Background="Transparent">
 
 					<CommandBar.PrimaryCommands>
 						<AppBarButton  Icon="Volume">
 							<AppBarButton.Flyout>
 								<Flyout Placement="Bottom">
-									<Slider Maximum="127" Value="{x:Bind ViewModel.MasterVolume, Mode=TwoWay, Converter={StaticResource Int32ToDoubleConverter}}" VerticalAlignment="Center" Margin="0"/>
+									<Slider Maximum="100" Value="{x:Bind ViewModel.MasterVolume, Mode=TwoWay, Converter={StaticResource Int32ToDoubleConverter}}" VerticalAlignment="Center" Margin="0"/>
 								</Flyout>
 							</AppBarButton.Flyout>
 						</AppBarButton>
-						<AppBarButton ToolTipService.ToolTip="Stop" Click="{x:Bind ViewModel.Stop}" IsEnabled="{x:Bind ViewModel.CanStop, Mode=OneWay}" Icon="Stop"/>
-						<AppBarButton ToolTipService.ToolTip="Play" Click="{x:Bind ViewModel.Play}" IsEnabled="{x:Bind ViewModel.CanPlay, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsNotPlaying, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" Icon="Play"/>
-						<AppBarButton ToolTipService.ToolTip="Pause" Click="{x:Bind ViewModel.Pause}" Visibility="{x:Bind ViewModel.IsPlaying, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" Icon="Pause"/>
-						
+						<AppBarButton Label="Stop" ToolTipService.ToolTip="Stop" Click="{x:Bind ViewModel.Stop}" IsEnabled="{x:Bind ViewModel.CanStop, Mode=OneWay}" Icon="Stop"/>
+						<AppBarButton Label="Play" ToolTipService.ToolTip="Play" Click="{x:Bind ViewModel.Play}" IsEnabled="{x:Bind ViewModel.CanPlay, Mode=OneWay}" Visibility="{x:Bind ViewModel.IsNotPlaying, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" Icon="Play"/>
+						<AppBarButton Label="Pause" ToolTipService.ToolTip="Pause" Click="{x:Bind ViewModel.Pause}" Visibility="{x:Bind ViewModel.IsPlaying, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" Icon="Pause"/>
+
 					</CommandBar.PrimaryCommands>
 					<CommandBar.SecondaryCommands>
-						<AppBarToggleButton  Icon="RepeatAll" Label="Loop"/>
+						<AppBarButton Icon="RepeatAll" Label="{x:Bind ViewModel.LoopModeString, Mode=OneWay}" Click="{x:Bind ViewModel.ChangeLoopMode}"/>
 						<AppBarSeparator/>
 						<AppBarToggleButton Label="Like"/>
 						<AppBarToggleButton Label="Unlike"/>
 						<AppBarSeparator/>
-						<AppBarButton Label="Import from midi file" Click="{x:Bind ViewModel.ImportFromMidi}"/>
-						<AppBarButton Label="Export to audio file" Click="{x:Bind ViewModel.ExportToAudio}"/>
+						<AppBarButton Label="Import from midi file" Click="{x:Bind ViewModel.ImportFromMidiAsync}"/>
+						<AppBarButton Label="Export to audio file" Click="{x:Bind ViewModel.ExportToAudioAsync}"/>
 					</CommandBar.SecondaryCommands>
 					<CommandBar.Content>
 						<StackPanel>
@@ -128,7 +128,7 @@
 					</CommandBar.Content>
 				</CommandBar>
 
-
+				
 				<Frame Grid.Row="1" x:Name="frame"
                    Margin="0,0,0,0"
                    Navigating="OnNavigatingToPage"
@@ -143,7 +143,7 @@
 						</TransitionCollection>
 					</Frame.ContentTransitions>
 				</Frame>
-				
+
 			</Grid>
 		</SplitView>
 
@@ -157,8 +157,7 @@
                       Checked="TogglePaneButton_Checked"
                       AutomationProperties.Name="Menu"
                       ToolTipService.ToolTip="Menu" />
-		
-	</Grid>
 
+	</Grid>
 
 </Page>

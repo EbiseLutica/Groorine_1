@@ -1,8 +1,13 @@
-﻿namespace Groorine.XamForms.Droid
+﻿using Android.App;
+using Android.Content.PM;
+using Android.OS;
+
+namespace Groorine.XamForms.Droid
 {
 	[Activity(Label = "Groorine.XamForms", Icon = "@drawable/icon", Theme = "@style/MainTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
-	public class MainActivity : global::Xamarin.Forms.Platform.Android.FormsAppCompatActivity
+	public class MainActivity : Xamarin.Forms.Platform.Android.FormsAppCompatActivity
 	{
+		
 		protected override void OnCreate(Bundle bundle)
 		{
 			TabLayoutResource = Resource.Layout.Tabbar;

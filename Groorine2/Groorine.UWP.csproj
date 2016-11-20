@@ -12,7 +12,7 @@
     <DefaultLanguage>ja-JP</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
     <TargetPlatformVersion>10.0.14393.0</TargetPlatformVersion>
-    <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
+    <TargetPlatformMinVersion>10.0.10586.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -97,121 +97,6 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <Content Include="Presets\Inst\0.mssf" />
-    <Content Include="Presets\Inst\1.mssf" />
-    <Content Include="Presets\Inst\10.mssf" />
-    <Content Include="Presets\Inst\100.mssf" />
-    <Content Include="Presets\Inst\105.mssf" />
-    <Content Include="Presets\Inst\106.mssf" />
-    <Content Include="Presets\Inst\107.mssf" />
-    <Content Include="Presets\Inst\108.mssf" />
-    <Content Include="Presets\Inst\11.mssf" />
-    <Content Include="Presets\Inst\110.mssf" />
-    <Content Include="Presets\Inst\112.mssf" />
-    <Content Include="Presets\Inst\113.mssf" />
-    <Content Include="Presets\Inst\114.mssf" />
-    <Content Include="Presets\Inst\115.mssf" />
-    <Content Include="Presets\Inst\116.mssf" />
-    <Content Include="Presets\Inst\117.mssf" />
-    <Content Include="Presets\Inst\118.mssf" />
-    <Content Include="Presets\Inst\119.mssf" />
-    <Content Include="Presets\Inst\12.mssf" />
-    <Content Include="Presets\Inst\120.mssf" />
-    <Content Include="Presets\Inst\121.mssf" />
-    <Content Include="Presets\Inst\122.mssf" />
-    <Content Include="Presets\Inst\123.mssf" />
-    <Content Include="Presets\Inst\124.mssf" />
-    <Content Include="Presets\Inst\125.mssf" />
-    <Content Include="Presets\Inst\126.mssf" />
-    <Content Include="Presets\Inst\127.mssf" />
-    <Content Include="Presets\Inst\13.mssf" />
-    <Content Include="Presets\Inst\14.mssf" />
-    <Content Include="Presets\Inst\15.mssf" />
-    <Content Include="Presets\Inst\16.mssf" />
-    <Content Include="Presets\Inst\17.mssf" />
-    <Content Include="Presets\Inst\18.mssf" />
-    <Content Include="Presets\Inst\19.mssf" />
-    <Content Include="Presets\Inst\2.mssf" />
-    <Content Include="Presets\Inst\20.mssf" />
-    <Content Include="Presets\Inst\21.mssf" />
-    <Content Include="Presets\Inst\22.mssf" />
-    <Content Include="Presets\Inst\23.mssf" />
-    <Content Include="Presets\Inst\24.mssf" />
-    <Content Include="Presets\Inst\25.mssf" />
-    <Content Include="Presets\Inst\26.mssf" />
-    <Content Include="Presets\Inst\27.mssf" />
-    <Content Include="Presets\Inst\28.mssf" />
-    <Content Include="Presets\Inst\29.mssf" />
-    <Content Include="Presets\Inst\3.mssf" />
-    <Content Include="Presets\Inst\30.mssf" />
-    <Content Include="Presets\Inst\31.mssf" />
-    <Content Include="Presets\Inst\32.mssf" />
-    <Content Include="Presets\Inst\33.mssf" />
-    <Content Include="Presets\Inst\34.mssf" />
-    <Content Include="Presets\Inst\35.mssf" />
-    <Content Include="Presets\Inst\36.mssf" />
-    <Content Include="Presets\Inst\37.mssf" />
-    <Content Include="Presets\Inst\38.mssf" />
-    <Content Include="Presets\Inst\39.mssf" />
-    <Content Include="Presets\Inst\4.mssf" />
-    <Content Include="Presets\Inst\40.mssf" />
-    <Content Include="Presets\Inst\41.mssf" />
-    <Content Include="Presets\Inst\42.mssf" />
-    <Content Include="Presets\Inst\43.mssf" />
-    <Content Include="Presets\Inst\44.mssf" />
-    <Content Include="Presets\Inst\45.mssf" />
-    <Content Include="Presets\Inst\46.mssf" />
-    <Content Include="Presets\Inst\47.mssf" />
-    <Content Include="Presets\Inst\48.mssf" />
-    <Content Include="Presets\Inst\49.mssf" />
-    <Content Include="Presets\Inst\5.mssf" />
-    <Content Include="Presets\Inst\50.mssf" />
-    <Content Include="Presets\Inst\51.mssf" />
-    <Content Include="Presets\Inst\52.mssf" />
-    <Content Include="Presets\Inst\53.mssf" />
-    <Content Include="Presets\Inst\54.mssf" />
-    <Content Include="Presets\Inst\55.mssf" />
-    <Content Include="Presets\Inst\56.mssf" />
-    <Content Include="Presets\Inst\57.mssf" />
-    <Content Include="Presets\Inst\58.mssf" />
-    <Content Include="Presets\Inst\59.mssf" />
-    <Content Include="Presets\Inst\6.mssf" />
-    <Content Include="Presets\Inst\60.mssf" />
-    <Content Include="Presets\Inst\61.mssf" />
-    <Content Include="Presets\Inst\62.mssf" />
-    <Content Include="Presets\Inst\63.mssf" />
-    <Content Include="Presets\Inst\64.mssf" />
-    <Content Include="Presets\Inst\65.mssf" />
-    <Content Include="Presets\Inst\66.mssf" />
-    <Content Include="Presets\Inst\67.mssf" />
-    <Content Include="Presets\Inst\68.mssf" />
-    <Content Include="Presets\Inst\69.mssf" />
-    <Content Include="Presets\Inst\7.mssf" />
-    <Content Include="Presets\Inst\70.mssf" />
-    <Content Include="Presets\Inst\71.mssf" />
-    <Content Include="Presets\Inst\72.mssf" />
-    <Content Include="Presets\Inst\73.mssf" />
-    <Content Include="Presets\Inst\74.mssf" />
-    <Content Include="Presets\Inst\75.mssf" />
-    <Content Include="Presets\Inst\76.mssf" />
-    <Content Include="Presets\Inst\77.mssf" />
-    <Content Include="Presets\Inst\78.mssf" />
-    <Content Include="Presets\Inst\79.mssf" />
-    <Content Include="Presets\Inst\8.mssf" />
-    <Content Include="Presets\Inst\80.mssf" />
-    <Content Include="Presets\Inst\81.mssf" />
-    <Content Include="Presets\Inst\82.mssf" />
-    <Content Include="Presets\Inst\83.mssf" />
-    <Content Include="Presets\Inst\84.mssf" />
-    <Content Include="Presets\Inst\85.mssf" />
-    <Content Include="Presets\Inst\86.mssf" />
-    <Content Include="Presets\Inst\87.mssf" />
-    <Content Include="Presets\Inst\88.mssf" />
-    <Content Include="Presets\Inst\89.mssf" />
-    <Content Include="Presets\Inst\9.mssf" />
-    <Content Include="Presets\Inst\90.mssf" />
-    <Content Include="Presets\Inst\98.mssf" />
-    <Content Include="Presets\Inst\99.mssf" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
@@ -220,6 +105,9 @@
     </Compile>
     <Compile Include="BooleanToVisibilityConverter.cs" />
     <Compile Include="Controls\NavMenuListView.cs" />
+    <Compile Include="Controls\StereoBar.xaml.cs">
+      <DependentUpon>StereoBar.xaml</DependentUpon>
+    </Compile>
     <Compile Include="DelegateCommand.cs" />
     <Compile Include="GroorineFileViewModel.cs" />
     <Compile Include="MainPage.xaml.cs">
@@ -227,10 +115,14 @@
     </Compile>
     <Compile Include="MainPageViewModel.cs" />
     <Compile Include="NavMenuItem.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Int64ToDoubleConverter.cs" />
     <Compile Include="View\MidiEventView.xaml.cs">
       <DependentUpon>MidiEventView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\PlayingView.xaml.cs">
+      <DependentUpon>PlayingView.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\PlaylistView.xaml.cs">
       <DependentUpon>PlaylistView.xaml</DependentUpon>
@@ -244,35 +136,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Hello, Groorine.mid" />
-    <Content Include="Presets\Drum\31.wav" />
-    <Content Include="Presets\Drum\35.wav" />
-    <Content Include="Presets\Drum\36.wav" />
-    <Content Include="Presets\Drum\37.wav" />
-    <Content Include="Presets\Drum\38.wav" />
-    <Content Include="Presets\Drum\39.wav" />
-    <Content Include="Presets\Drum\40.wav" />
-    <Content Include="Presets\Drum\41.wav" />
-    <Content Include="Presets\Drum\42.wav" />
-    <Content Include="Presets\Drum\43.wav" />
-    <Content Include="Presets\Drum\44.wav" />
-    <Content Include="Presets\Drum\45.wav" />
-    <Content Include="Presets\Drum\46.wav" />
-    <Content Include="Presets\Drum\47.wav" />
-    <Content Include="Presets\Drum\48.wav" />
-    <Content Include="Presets\Drum\49.wav" />
-    <Content Include="Presets\Drum\50.wav" />
-    <Content Include="Presets\Drum\51.wav" />
-    <Content Include="Presets\Drum\52.wav" />
-    <Content Include="Presets\Drum\54.wav" />
-    <Content Include="Presets\Drum\55.wav" />
-    <Content Include="Presets\Drum\57.wav" />
-    <Content Include="Presets\Drum\59.wav" />
-    <Content Include="Presets\Drum\63.wav" />
-    <Content Include="Presets\Drum\64.wav" />
-    <Content Include="Presets\Drum\78.wav" />
-    <Content Include="Presets\Drum\79.wav" />
-    <Content Include="Presets\Drum\80.wav" />
-    <Content Include="Presets\Drum\81.wav" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -287,6 +150,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="Controls\StereoBar.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -296,6 +163,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="View\MidiEventView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\PlayingView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
