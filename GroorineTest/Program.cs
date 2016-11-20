@@ -7,6 +7,7 @@ using GroorineCore.DotNet45;
 using GC = GroorineCore;
 using System.Threading;
 using static System.Console;
+using System.Windows;
 
 namespace GroorineTest
 {
@@ -78,9 +79,11 @@ namespace GroorineTest
 								break;
 							case ConsoleKey.F1:
 								myViewMode = ViewMode.Tone;
+								Clear();
 								break;
 							case ConsoleKey.F2:
 								myViewMode = ViewMode.Channel;
+								Clear();
 								break;
 						}
 					}
@@ -144,9 +147,15 @@ namespace GroorineTest
 
 			if (_ptr >= _files.Length)
 				_ptr = 0;
-			if (_files.Length > 0)
-				_player.Play(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _files[_ptr]), _useAutoPlay ? 2 : 2, 8000);
-
+			try
+			{
+				if (_files.Length > 0)
+					_player.Play(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _files[_ptr]), _useAutoPlay ? 2 : 2, 8000);
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"ERROR!!! {ex}");
+			}
 			if (_useAutoPlay)
 				_ptr++;
 			return true;
