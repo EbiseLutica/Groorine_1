@@ -14,7 +14,12 @@ namespace GroorineTest
 
 	class Program
 	{
-
+		static string Arrow(int length, double rate)
+		{
+			var a = (int)(length * rate);
+			var b = length - a;
+			return (a > 1 ? new string('=', a - 1) : "") + (a > 0 ? ">" : "") + (b > 0 ? new string('-', b) : "");
+		}
 		enum ViewMode
 		{
 			Tone,
@@ -29,7 +34,7 @@ namespace GroorineTest
 			Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.RealTime;
 			WriteLine(@"Groorine Test Console");
 
-			var myViewMode = ViewMode.Tone;
+			ViewMode myViewMode = ViewMode.Tone;
 
 			if (args.Length > 0)
 			{
@@ -45,15 +50,10 @@ namespace GroorineTest
 			{
 
 				Write("Do you want to use auto play?(Y/N) >");
-				var r = ReadKey();
+				ConsoleKeyInfo r = ReadKey();
 				_useAutoPlay = r.Key == ConsoleKey.Y;
 			}
-			string Arrow(int length, double rate)
-			{
-				int a = (int)(length * rate);
-				int b = length - a;
-				return (a > 1 ? new string('=', a - 1) : "") + (a > 0 ? ">" : "") + (b > 0 ? new string('-', b) : "");
-			}
+			
 
 			_player = new Player(latency: 25);
 
@@ -94,14 +94,16 @@ namespace GroorineTest
 					WriteLine(	"[SPACE]: 再生停止\n" +
 								"[F1]: ToneView\n" +
 								"[F2]: ChannelView");
-					if (_player.CorePlayer.CurrentFile?.Length is long l)
+					if (_player.CorePlayer.CurrentFile?.Length is long)
+					{
+						var l = (_player.CorePlayer.CurrentFile?.Length).Value;
 						WriteLine($"|{Arrow(80, _player.CorePlayer.Tick / (double)l)}| {_player.CorePlayer.Time / 1000d:###0.00 秒} / {_player.CorePlayer.MaxTime / 1000d:###0.00 秒}");
-
+					}
 					switch (myViewMode)
 					{
 						case ViewMode.Tone:
 							WriteLine("Tone View");
-							foreach (var t in GC.Player.Track.Tones.OrderBy(t => t?.Channel ?? int.MaxValue))
+							foreach (Tone t in GC.Player.Track.Tones/*.OrderBy(t => t?.Channel ?? int.MaxValue)*/)
 								if (t == null)
 									WriteLine("                                                                      ");
 								else
@@ -110,8 +112,8 @@ namespace GroorineTest
 							break;
 						case ViewMode.Channel:
 							WriteLine("Channel View");
-							foreach ((int pc, IChannel ch, int no) t in _player.CorePlayer.Tracks.Select((t, i) => (t.ProgramChange, t.Channel, i)))
-								WriteLine($"CH{t.no,2} V|{Arrow(16, t.ch.Volume / 127d)}| E|{Arrow(16, t.ch.Expression / 127d)}| Pan|{Arrow(24, t.ch.Panpot / 127)}| P.B.|{Arrow(24, (t.ch.Pitchbend + 8192) / 16384d)}|");
+							foreach (ValueTuple<int, IChannel, int> t in _player.CorePlayer.Tracks.Select((t, i) => new ValueTuple<int, IChannel, int>(t.ProgramChange, t.Channel, i)))
+								WriteLine($"CH{t.Item1,2} V|{Arrow(16, t.Item2.Volume / 127d)}| E|{Arrow(16, t.Item2.Expression / 127d)}| Pan|{Arrow(24, t.Item2.Panpot / 127)}| P.B.|{Arrow(24, (t.Item2.Pitchbend + 8192) / 16384d)}|");
 							break;
 					}
 					
@@ -132,11 +134,12 @@ namespace GroorineTest
 			Clear();
 			if (!_useAutoPlay || _ptr == -1)
 			{
-				foreach ((string path, int index) fs in _files.Select((s, i) => (s, i)))
-					WriteLine($"{fs.index})\t{fs.path}");
+				foreach (ValueTuple<string, int> fs in _files.Select((s, i) => new ValueTuple<string, int>(s, i)))
+					WriteLine($"{fs.Item2})\t{fs.Item1}");
 				WriteLine();
 				Write("再生するものを選んでください(-1で終了) >");
-				while (!int.TryParse(ReadLine(), out var a) || a >= _files.Length || a < 0)
+				int a;
+				while (!int.TryParse(ReadLine(), out a) || a >= _files.Length || a < 0)
 				{
 					if (a == -1)
 						return false;

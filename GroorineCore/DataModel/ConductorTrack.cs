@@ -41,7 +41,7 @@ namespace GroorineCore.DataModel
 		public int ToTick(int msec)
 		{
 			
-			if (_msec is int ms && ms == msec)
+			if (_msec != null && _msec.Value == msec)
 				return _toTickCache;
 			if (msec < 0)
 				throw new ArgumentOutOfRangeException(nameof(msec));
@@ -54,7 +54,7 @@ namespace GroorineCore.DataModel
 		private int _toMilliSecCache;
 		public int ToMilliSeconds(int tick)
 		{
-			if (_tick is int t && t == tick)
+			if (_tick != null && _tick.Value == tick)
 				return _toMilliSecCache;
 			if (tick < 0)
 				throw new ArgumentOutOfRangeException(nameof(tick));
@@ -75,7 +75,7 @@ namespace GroorineCore.DataModel
 			};
 		}
 
-		public static int GetTickLength(int msec, int tempo, int resolution) => (int)(resolution * (msec / 1000.0) * (tempo / 60.0));
+		public static int GetTickLength(int msec, int tempo, int resolution) => (int)(resolution * (msec * 0.001) * (tempo * 0.0166));
 
 		public static int GetMilliSeconds(int tick, int tempo, int resolution) => (int)(tick / (double)resolution / tempo * 60000.0);
 
@@ -99,33 +99,5 @@ namespace GroorineCore.DataModel
 		}
 
 
-	}
-
-	/// <summary>
-	/// 位置情報とテンポのセットです。
-	/// </summary>
-	public class ScoreTempo
-	{
-		/// <summary>
-		/// データの時刻です。
-		/// </summary>
-		public int MilliSeconds { get; }
-		/// <summary>
-		/// データの時刻です。
-		/// </summary>
-		public int Tick { get; }
-		/// <summary>
-		/// テンポの値です。
-		/// </summary>
-		public int Tempo { get; }
-		/// <summary>
-		/// ScoreTempo のインスタンスを作成します。
-		/// </summary>
-		internal ScoreTempo(int msec, int tick, int tempo)
-		{
-			MilliSeconds = msec;
-			Tick = tick;
-			Tempo = tempo;
-		}
 	}
 }

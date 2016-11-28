@@ -99,6 +99,7 @@ namespace GroorineCore.DataModel
 
 		internal Channel() : this(64, 100, 100, 0, 0, 2) { }
 
+
 		public double GetFreqExts() => _freqExts = Math.Pow(2, (Pitchbend / 8192d) * (BendRange / 12d)) * Math.Pow(2, (Tweak / 8192d) * (2 / 12d)) * Math.Pow(2, NoteShift / 12d);
 	}
 }

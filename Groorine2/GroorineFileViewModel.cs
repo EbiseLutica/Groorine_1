@@ -5,7 +5,7 @@ namespace Groorine
 {
 	public class GroorineFileViewModel : BindableBase
 	{
-		private GroorineFile _file;
+		private MidiFile _file;
 		private string _title;
 		private string _copyright;
 		private long _length;
@@ -28,7 +28,7 @@ namespace Groorine
 			set { SetProperty(ref _length, value); }
 		}
 
-		public GroorineFile File
+		public MidiFile File
 		{
 			get { return _file; }
 			set { SetProperty(ref _file, value); }
@@ -39,12 +39,12 @@ namespace Groorine
 		/// <see cref="GroorineFileViewModel"/> クラスの新しいインスタンスを初期化します。
 		/// </summary>
 		/// <param name="model"></param>
-		public GroorineFileViewModel(GroorineFile model)
+		public GroorineFileViewModel(MidiFile model)
 		{
 			Title = "No Project";
 			Copyright = "";
 			Length = 0;
-
+			
 			if (model == null) return;
 			_file = model;
 			Title = model.Title;

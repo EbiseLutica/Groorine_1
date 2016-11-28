@@ -104,6 +104,9 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="BooleanToVisibilityConverter.cs" />
+    <Compile Include="BouncingDialog.xaml.cs">
+      <DependentUpon>BouncingDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\NavMenuListView.cs" />
     <Compile Include="Controls\StereoBar.xaml.cs">
       <DependentUpon>StereoBar.xaml</DependentUpon>
@@ -150,6 +153,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="BouncingDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Controls\StereoBar.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

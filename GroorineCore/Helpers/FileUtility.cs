@@ -10,7 +10,7 @@ namespace GroorineCore.Helpers
 	{
 
 
-		public static Mssf LoadMssf(Stream stream)
+		public static AudioSourceMssf LoadMssf(Stream stream)
 		{
 			var br = new BinaryReader(stream);
 			char[] magic = br.ReadChars(8);
@@ -31,7 +31,7 @@ namespace GroorineCore.Helpers
 
 			var pan = br.ReadInt32();
 
-			return new Mssf(wave, env, pan);
+			return new AudioSourceMssf(wave, env, pan);
 		}
 	}
 

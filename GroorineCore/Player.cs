@@ -4,6 +4,7 @@ using GroorineCore.DataModel;
 using GroorineCore.Events;
 using GroorineCore.Helpers;
 using GroorineCore.Synth;
+using System;
 using static System.Math;
 using static GroorineCore.Helpers.MathHelper;
 
@@ -30,7 +31,7 @@ namespace GroorineCore
 		/// <summary>
 		/// 読み込まれた Groorine プロジェクトファイルを取得します。
 		/// </summary>
-		public GroorineFile CurrentFile { get; private set; }
+		public MidiFile CurrentFile { get; private set; }
 
 
 
@@ -55,6 +56,8 @@ namespace GroorineCore
 
 		public int Tick { get; set; }
 
+		double GetTime(int index) => index / (SampleRate * 0.001 * 2);
+
 		public short[] GetBuffer(short[] buf)
 		{
 			if (buf == null)
@@ -69,20 +72,42 @@ namespace GroorineCore
 
 			double firstTime = Time;
 
-			double GetTime(int index) => index / (SampleRate * 0.001 * 2);
-			//double time;
 			for (var i = 0; i < buf.Length; i += 2)
 			{
-				//time = getTime(i);
 				Time = (long)(firstTime + GetTime(i) + 0.5);
 				Tick = CurrentFile.Conductor.ToTick((int)Time);
+
+				buf[i] = buf[i + 1] = 0;
+
+				for (var ti = 0; ti < Track.Tones.Length; ti++)
+				{
+					Tone t = Track.Tones[ti];
+
+					if (t == null)
+						continue;
+
+
+					t.Tick = Tick;
+					if (t.RealTick >= t.Gate - 1)
+					{
+						Track.Tones[ti] = null;
+						continue;
+					}
+
+					ValueTuple<short, short> sample = Tracks[t.Channel].Process(ti, SampleRate);
+
+					buf[i] += sample.Item1;
+					buf[i + 1] += sample.Item2;
+
+				}
 
 				if (CurrentFile != null)
 				{
 					if (Tick >= CurrentFile.Length)
 					{
-						if (CurrentFile.LoopStart is long loop)
+						if (CurrentFile.LoopStart is long)
 						{
+							long loop = CurrentFile.LoopStart.Value;
 							Tick = _preTick = (int)loop;
 							_preTick--;
 							Time = CurrentFile.Conductor.ToMilliSeconds(Tick);
@@ -107,7 +132,6 @@ namespace GroorineCore
 						{
 							if (Tick > t.Length)
 								continue;
-							//foreach (MidiEvent me in t.GetDataBetweenTicks(_preTick, tick))
 							foreach (MidiEvent me in t.Events)
 							{
 								if (_preTick < me.Tick && me.Tick <= Tick)
@@ -116,31 +140,11 @@ namespace GroorineCore
 						}
 					}
 				}
-				buf[i] = buf[i + 1] = 0;
+				
 
-				//foreach (Track t in Tracks)
-				//{
-				for (var ti = 0; ti < Track.Tones.Length; ti++)
+				if (FadeOutTick is int)
 				{
-					var t = Track.Tones[ti];
-					if (t == null)
-						continue;
-					if (t.RealTick > t.Gate /*&& t.Channel != 9*/)
-					{
-						Track.Tones[ti] = null;
-						continue;
-					}
-					(short, short) sample = Tracks[t.Channel].Process(ti, SampleRate);
-
-					//(float, float) sample = (0, 0);
-					buf[i] += sample.Item1;
-					buf[i + 1] += sample.Item2;
-					t.Tick = Tick;
-				}
-				//}
-
-				if (FadeOutTick is int fot)
-				{
+					int fot = FadeOutTick.Value;
 					buf[i] = (short)(buf[i] * Linear(fot, 0, FadeOutTime, 0, 1));
 					buf[i + 1] = (short)(buf[i + 1] * Linear(fot, 0, FadeOutTime, 0, 1));
 					FadeOutTick--;
@@ -150,8 +154,7 @@ namespace GroorineCore
 
 
 				_preTick = Tick;
-
-				//buf[i] = buf[i + 1] = (short)(x % 100 < 50 ? -32768 : 32767);
+			
 
 			}
 			return buf;
@@ -164,9 +167,8 @@ namespace GroorineCore
 		/// 指定したプロジェクトファイルを読み込み、再生の準備をします。現在再生中の場合は停止します。
 		/// </summary>
 		/// <param name="gf"></param>
-		public void Load(GroorineFile gf)
+		public void Load(MidiFile gf)
 		{
-			//_eventWaitHandle?.WaitOne();
 			if (gf == null)
 				return;
 			Stop();
@@ -249,7 +251,7 @@ namespace GroorineCore
 			IsPlaying = false;
 			IsPausing = true;
 		}
-		
+
 
 		public class Track
 		{
@@ -295,102 +297,111 @@ namespace GroorineCore
 
 			public void SendEvent(MidiEvent me, int tick)
 			{
-				switch (me)
+				if (me is NoteEvent)
 				{
-					case NoteEvent n:
 
 
 
-						var value = Tones.TakeWhile(t => t != null && (t.Channel != (me as NoteEvent).Channel || t.NoteNum != (me as NoteEvent).Note)).Count();
-
-						if (value != Tones.Length)
-							_tonePtr = value;
+					var value = Tones.TakeWhile(t => !(t == null || t.RealTick >= t.Gate || (t.Channel == me.Channel && t.NoteNum == (me as NoteEvent).Note))).Count();
 
 
-						Tones[_tonePtr] = new Tone(n) { StartTick = tick, Tick = tick };
-						AudioTimers[_tonePtr].Reset();
+					if (value != Tones.Length)
+						_tonePtr = value;
+					else
+					{
+						ValueTuple<Tone, int> value2 = Tones.Select((t, i) => new ValueTuple<Tone, int>(t, i)).Where(ti => ti.Item1 != null).OrderBy((ti) => ti.Item1.StartTick).FirstOrDefault();
+						if (value2.Item1 != null)
+							_tonePtr = value2.Item2;
+					}
+					Tones[_tonePtr] = new Tone(me as NoteEvent) { StartTick = tick, Tick = tick };
+					AudioTimers[_tonePtr].Reset();
 
-						_tonePtr = (_tonePtr + 1) % Tones.Length;
+					_tonePtr = (_tonePtr + 1) % Tones.Length;
 
-						break;
-					case ControlEvent c:
-						var cc = c.ControlNo;
-						switch (cc)
-						{
-							case ControlChangeType.Volume:
-								Channel.Volume = c.Data;
-								break;
-							case ControlChangeType.Panpot:
-								Channel.Panpot = c.Data;
-								break;
-							case ControlChangeType.Expression:
-								Channel.Expression = c.Data;
-								break;
-							case ControlChangeType.DataMsb:
-								Rpns[2] = c.Data;
-								switch (Rpns[1])
-								{
-									case 0:
-										Channel.BendRange = Rpns[2];
-										break;
-									case 2:
-										Channel.NoteShift = (short)(Rpns[2] - 64);
-										break;
-								}
-								break;
-							case ControlChangeType.DataLsb:
-								Rpns[3] = c.Data;
-								if (Rpns[1] == 1)
-									Channel.Tweak = (short)((Rpns[2] << 7) + Rpns[3] - 8192);
-								break;
-							case ControlChangeType.Rpnlsb:
-								Rpns[1] = c.Data;
-								break;
-							case ControlChangeType.Rpnmsb:
-								Rpns[0] = c.Data;
-								break;
-							case ControlChangeType.HoldPedal:
-								break;
-							case ControlChangeType.Reverb:
-								break;
-							case ControlChangeType.Chorus:
-								break;
-							case ControlChangeType.Delay:
-								break;
-							case ControlChangeType.AllSoundOff:
-								break;
-							case ControlChangeType.ResetAllController:
-								break;
-							case ControlChangeType.AllNoteOff:
-								break;
-							case ControlChangeType.Mono:
-								break;
-							case ControlChangeType.Poly:
-								break;
-							case ControlChangeType.BankMsb:
-								break;
-							case ControlChangeType.BankLsb:
-								break;
-							case ControlChangeType.Modulation:
-								break;
-							default:
-								break;
-						}
-						break;
-					case PitchEvent p:
-						Channel.Pitchbend = p.Bend;
-						break;
-					case ProgramEvent pg:
-						ProgramChange = pg.ProgramNo;
-						break;
+				}
+				else if (me is ControlEvent)
+				{
+					var c = (ControlEvent)me;
+					var cc = c.ControlNo;
+					switch (cc)
+					{
+						case ControlChangeType.Volume:
+							Channel.Volume = c.Data;
+							break;
+						case ControlChangeType.Panpot:
+							Channel.Panpot = c.Data;
+							break;
+						case ControlChangeType.Expression:
+							Channel.Expression = c.Data;
+							break;
+						case ControlChangeType.DataMsb:
+							Rpns[2] = c.Data;
+							switch (Rpns[1])
+							{
+								case 0:
+									Channel.BendRange = Rpns[2];
+									break;
+								case 2:
+									Channel.NoteShift = (short)(Rpns[2] - 64);
+									break;
+							}
+							break;
+						case ControlChangeType.DataLsb:
+							Rpns[3] = c.Data;
+							if (Rpns[1] == 1)
+								Channel.Tweak = (short)((Rpns[2] << 7) + Rpns[3] - 8192);
+							break;
+						case ControlChangeType.Rpnlsb:
+							Rpns[1] = c.Data;
+							break;
+						case ControlChangeType.Rpnmsb:
+							Rpns[0] = c.Data;
+							break;
+						case ControlChangeType.HoldPedal:
+							break;
+						case ControlChangeType.Reverb:
+							break;
+						case ControlChangeType.Chorus:
+							break;
+						case ControlChangeType.Delay:
+							break;
+						case ControlChangeType.AllSoundOff:
+							break;
+						case ControlChangeType.ResetAllController:
+							break;
+						case ControlChangeType.AllNoteOff:
+							break;
+						case ControlChangeType.Mono:
+							break;
+						case ControlChangeType.Poly:
+							break;
+						case ControlChangeType.BankMsb:
+							break;
+						case ControlChangeType.BankLsb:
+							break;
+						case ControlChangeType.Modulation:
+							break;
+						default:
+							break;
+					}
+				}
+				else if (me is PitchEvent)
+				{
+					var p = (PitchEvent)me;
+					Channel.Pitchbend = p.Bend;
+				}
+				else if (me is ProgramEvent)
+				{
+					var pg = (ProgramEvent)me;
+					ProgramChange = pg.ProgramNo;
 				}
 			}
 
-			public (short, short) Process(int index, int sampleRate)
+			public ValueTuple<short, short> Process(int index, int sampleRate)
 			{
 				Tone t = Tones[index];
 				AudioTimer at = AudioTimers[index];
-				(short, short) output = (0, 0);
+				ValueTuple<short, short> output = new ValueTuple<short, short>(0, 0);
 				if (t == null)
 					return output;
 				IInstrument il;
@@ -400,11 +411,11 @@ namespace GroorineCore
 				if (il == null)
 					return output;
 
-				var panrt = Channel.Panpot / 127f;
+				var panrt = Channel.Panpot * 0.0078f;
 				var a = 4f / Tones.Length;
 				if (t.Channel == 9) a *= 2;
 
-				var kake = (Channel.Volume / 127f) * (Channel.Expression / 127f) * (t.Velocity / 127f) * a;
+				var kake = (Channel.Volume * 0.0078f) * (Channel.Expression * 0.0078f) * (t.Velocity * 0.0078f) * a;
 
 				var freq = FreqTable[t.NoteNum] * Channel.FreqExts;
 				if (t.Channel == 9)

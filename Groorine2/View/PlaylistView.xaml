@@ -15,6 +15,7 @@
 					<FlyoutBase.AttachedFlyout>
 						<MenuFlyout>
 							<MenuFlyoutItem Command="{Binding ElementName=ViewRoot, Path=ViewModel.DeleteCommand}" CommandParameter="{x:Bind}">Delete</MenuFlyoutItem>
+							<MenuFlyoutItem Command="{Binding ElementName=ViewRoot, Path=ViewModel.ExportCommand}" CommandParameter="{x:Bind}">Bounce...</MenuFlyoutItem>
 						</MenuFlyout>
 					</FlyoutBase.AttachedFlyout>
 					<TextBlock Text="{x:Bind DisplayName}" FontWeight="Bold" Foreground="{StaticResource SystemControlBackgroundBaseHighBrush}"/>

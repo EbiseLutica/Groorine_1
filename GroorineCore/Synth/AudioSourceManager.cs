@@ -1,20 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using GroorineCore.Api;
-using GroorineCore.DataModel;
 using GroorineCore.Helpers;
 
 namespace GroorineCore.Synth
 {
-	public class InstrumentList : List<IInstrument>
-	{
-		public IEnumerable<IInstrument> FindInstrumentsByNote(byte noteNo) => this.Where(i => i.KeyRange.Contains(noteNo));
-		public IEnumerable<IInstrument> FindInstrumentsByVelocity(byte velocity) => this.Where(i => i.VelocityRange.Contains(velocity));
-		public IEnumerable<IInstrument> FindInstruments(byte noteNo, byte velocity) => this.Where(i => i.KeyRange.Contains(noteNo) && i.VelocityRange.Contains(velocity));
-	}
 
 	public class AudioSourceManager
 	{
@@ -47,7 +39,8 @@ namespace GroorineCore.Synth
 				foreach (IFile f in files)
 				{
 					var fileName = Path.GetFileNameWithoutExtension(f.Path);
-					if (!byte.TryParse(fileName, out var ch))
+					byte ch;
+					if (!byte.TryParse(fileName, out ch))
 						continue;
 					
 					AddInstrument(ch, new Instrument(ch, await ReadAudioSourceFileAsync(f)));
@@ -60,7 +53,8 @@ namespace GroorineCore.Synth
 				foreach (IFile f in files)
 				{
 					var fileName = Path.GetFileNameWithoutExtension(f.Path);
-					if (!byte.TryParse(fileName, out var ch))
+					byte ch;
+					if (!byte.TryParse(fileName, out ch))
 						continue;
 
 
@@ -74,7 +68,6 @@ namespace GroorineCore.Synth
 			{
 				if (Instruments[i] == null)
 				{
-					//Instruments[i] = new InstrumentList();
 					AddInstrument(i,  new Instrument(new AudioSourceSine()));
 				}
 			}
@@ -121,62 +114,6 @@ namespace GroorineCore.Synth
 				throw new InvalidOperationException("初期化されていません。");
 			return _instance;
 		}
-	}
-
-	public interface IInstrument
-	{
-		Range<byte> KeyRange { get; }
-		Range<byte> VelocityRange { get; }
-		IAudioSource Source { get; }
-		double Pan { get; }
-
-	}
-
-	public class Instrument : IInstrument
-	{
-		private double _pan;
-
-		public Range<byte> KeyRange { get; }
-		public Range<byte> VelocityRange { get; }
-		public IAudioSource Source { get; }
-		public double Pan
-		{
-			get { return _pan; }
-			set
-			{
-				if (_pan > 100 || _pan < -100)
-					throw new ArgumentOutOfRangeException(nameof(Pan));
-				_pan = value;
-				
-			}
-		}
-
-		internal Instrument(Range<byte> key, Range<byte> vel, IAudioSource src, double pan = 0)
-		{
-			if (key == null)
-				throw new ArgumentNullException(nameof(key));
-			if (vel == null)
-				throw new ArgumentNullException(nameof(vel));
-			if (!key.IsBetween(0, 127))
-				throw new ArgumentOutOfRangeException(nameof(key));
-			if (!vel.IsBetween(0, 127))
-				throw new ArgumentOutOfRangeException(nameof(vel));
-			if (src == null)
-				throw new ArgumentNullException(nameof(src));
-			KeyRange = key;
-			VelocityRange = vel;
-			Source = src;
-			Pan = pan;
-		}
-
-		internal Instrument(IAudioSource src, double pan = 0)
-			: this(new Range<byte>(0, 127), new Range<byte>(0, 127), src, pan) { }
-
-		internal Instrument(byte noteNo, IAudioSource src, double pan = 0)
-			: this(new Range<byte>(noteNo, noteNo), new Range<byte>(0, 127), src, pan) { }
-
-		
-
 	}
 
 }

@@ -50,8 +50,11 @@ namespace GroorineCore.DataModel
 			if (lod == null)
 				return;
 			Length = lod.Tick;
-			if (lod is NoteEvent ne)
+			if (lod is NoteEvent)
+			{
+				var ne = lod as NoteEvent;
 				Length = ne.Tick + ne.Gate;
+			}
 		}
 
 		/// <summary>

@@ -50,6 +50,8 @@ namespace Groorine.Controls
 		private static void PropertyChangedCallback(DependencyObject o, DependencyPropertyChangedEventArgs args)
 		{
 			var s = o as StereoBar;
+			if (args.NewValue == args.OldValue)
+				return;
 			s?.OnPropertyChanged(nameof(LeftWidth));
 			s?.OnPropertyChanged(nameof(RightWidth));
 		}
@@ -65,7 +67,6 @@ namespace Groorine.Controls
 		
 		public static readonly DependencyProperty MaxValueProperty =
 			DependencyProperty.Register("MaxValue", typeof(int), typeof(StereoBar), PropertyMetadata.Create(127, PropertyChangedCallback));
-
 
 
 		public int MinValue

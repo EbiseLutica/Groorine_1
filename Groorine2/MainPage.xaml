@@ -113,12 +113,12 @@
 					</CommandBar.PrimaryCommands>
 					<CommandBar.SecondaryCommands>
 						<AppBarButton Icon="RepeatAll" Label="{x:Bind ViewModel.LoopModeString, Mode=OneWay}" Click="{x:Bind ViewModel.ChangeLoopMode}"/>
-						<AppBarSeparator/>
+						<!--<AppBarSeparator/>
 						<AppBarToggleButton Label="Like"/>
-						<AppBarToggleButton Label="Unlike"/>
+						<AppBarToggleButton Label="Unlike"/>-->
 						<AppBarSeparator/>
-						<AppBarButton Label="Import from midi file" Click="{x:Bind ViewModel.ImportFromMidiAsync}"/>
-						<AppBarButton Label="Export to audio file" Click="{x:Bind ViewModel.ExportToAudioAsync}"/>
+						<AppBarButton Label="Import..." Click="{x:Bind ViewModel.ImportFromMidiAsync}"/>
+						
 					</CommandBar.SecondaryCommands>
 					<CommandBar.Content>
 						<StackPanel>

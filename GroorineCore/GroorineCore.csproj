@@ -54,21 +54,25 @@
     <Compile Include="Api\IFileBrowser.cs" />
     <Compile Include="Api\IFolder.cs" />
     <Compile Include="Api\CreationCollisionOption.cs" />
+    <Compile Include="DataModel\ScoreTempo.cs" />
     <Compile Include="Events\ChannelPressureEvent.cs" />
     <Compile Include="DataModel\ControlChangeType.cs" />
     <Compile Include="DataModel\Range.cs" />
     <Compile Include="DataModel\Tone.cs" />
     <Compile Include="DataModel\EnvelopeFlag.cs" />
     <Compile Include="DataModel\Envelope.cs" />
+    <Compile Include="Events\CommentEvent.cs" />
     <Compile Include="Events\EndOfTrackEvent.cs" />
     <Compile Include="Events\BeatEvent.cs" />
     <Compile Include="DataModel\ConductorTrack.cs" />
     <Compile Include="Api\FileAccessMode.cs" />
+    <Compile Include="Events\LyricsEvent.cs" />
+    <Compile Include="Events\SysExEvent.cs" />
+    <Compile Include="Events\TextEventBase.cs" />
     <Compile Include="Helpers\FileUtility.cs" />
     <Compile Include="Helpers\BindableBase.cs" />
     <Compile Include="Events\ControlEvent.cs" />
-    <Compile Include="DataModel\GroorineFile.cs" />
-    <Compile Include="Helpers\CheckFunctions.cs" />
+    <Compile Include="DataModel\MidiFile.cs" />
     <Compile Include="Helpers\MathHelper.cs" />
     <Compile Include="Helpers\MidiTimingConverter.cs" />
     <Compile Include="Helpers\ReaderExtensions.cs" />
@@ -79,8 +83,11 @@
     <Compile Include="Events\PolyphonicKeyPressureEvent.cs" />
     <Compile Include="Api\NameCollisionOption.cs" />
     <Compile Include="Synth\AudioSourceManager.cs" />
+    <Compile Include="Synth\AudioSourceSine.cs" />
+    <Compile Include="Synth\AudioSourceWav.cs" />
+    <Compile Include="Synth\AudioSourceWaveTable.cs" />
     <Compile Include="Synth\IAudioSource.cs" />
-    <Compile Include="Synth\Mssf.cs" />
+    <Compile Include="Synth\AudioSourceMssf.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Events\TempoEvent.cs" />
     <Compile Include="DataModel\Channel.cs" />
@@ -89,6 +96,9 @@
     <Compile Include="Events\ProgramEvent.cs" />
     <Compile Include="SmfParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Synth\IInstrument.cs" />
+    <Compile Include="Synth\Instrument.cs" />
+    <Compile Include="Synth\InstrumentList.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">

@@ -15,7 +15,16 @@ namespace GroorineCore
 	/// </summary>
 	public static class SmfParser
 	{
-		public static GroorineFile Parse(Stream data)
+
+
+		static int Pow(int a, int b)
+		{
+			for (var hage = 1; hage < b; hage++)
+				a *= a;
+			return a;
+		}
+
+		public static MidiFile Parse(Stream data)
 		{
 			var tracks = new ObservableCollection<Track>();
 			var title = "";
@@ -37,14 +46,10 @@ namespace GroorineCore
 				var trackNum = br.ReadInt16Be();
 				var resolution = br.ReadInt16Be();
 
-				//Debug.WriteLine($"MThd: {chunklen} {format} {trackNum} {resolution}");
 				for (var i = 0; i < trackNum; i++)
 				{
-					//Debug.WriteLine($"{i} / {trackNum}");
 					br.ReadBytes(4);
-					//Debug.WriteLine("MTrk");
 					var size = br.ReadInt32Be();
-					//Debug.WriteLine($"Size: {size}");
 					var events = new ObservableCollection<MidiEvent>();
 					Track mt;
 					tracks.Add(mt = new Track(events));
@@ -55,13 +60,10 @@ namespace GroorineCore
 					var j = 0;
 					while (j < size)
 					{
-						//Debug.WriteLine($"{j} / {size}");
 						var length = br.ReadVariableLength(ref j);
-						//Debug.WriteLine($"DeltaTime: {length}");
 						tick += length;
 						var eventStatus = br.ReadByte();
 						j++;
-						//Debug.WriteLine($"status: {eventStatus}");
 						switch (eventStatus)
 						{
 							case 0xFF:
@@ -71,7 +73,6 @@ namespace GroorineCore
 								byte[] d = br.ReadBytes(len);
 								var moji = Encoding.UTF8.GetString(d, 0, len);
 
-								//Debug.WriteLine($"MetaEvent {type:x} {len:x} {new string(moji)}");
 								j++;
 								j += len;
 								switch (type)
@@ -113,12 +114,6 @@ namespace GroorineCore
 										});
 										break;
 									case 0x58:
-										int Pow(int a, int b)
-										{
-											for (var hage = 1; hage < b; hage++)
-												a *= a;
-											return a;
-										}
 										metas.Add(new BeatEvent
 										{
 											Tick = tick,
@@ -156,7 +151,6 @@ namespace GroorineCore
 								// Other
 								type = eventStatus;
 								var channel = (byte)(type & 0xf);
-								//Debug.WriteLine($"{channel:x} {type:x}");
 								switch (type & 0xF0)
 								{
 									case 0x90:
@@ -164,14 +158,6 @@ namespace GroorineCore
 										var note = br.ReadByte();
 										var vel = br.ReadByte();
 										j += 2;
-										/*events.Add(new NoteOnEvent
-										{
-											Channel = channel,
-											Note = note,
-											Velocity = vel,
-											Tick = tick
-										});*/
-
 										if (vel == 0 && noteDic.ContainsKey(note))
 										{
 											noteDic[note].Gate = tick - noteDic[note].Tick;
@@ -350,7 +336,7 @@ namespace GroorineCore
 						}
 					}
 				}
-				return new GroorineFile(new ConductorTrack(metas, resolution), tracks, resolution, title, copyright, loopStart);
+				return new MidiFile(new ConductorTrack(metas, resolution), tracks, resolution, title, copyright, loopStart);
 			}
 		}
 	}
