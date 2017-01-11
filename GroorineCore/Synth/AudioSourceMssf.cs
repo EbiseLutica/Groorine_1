@@ -35,7 +35,7 @@ namespace GroorineCore.Synth
 		}
 
 
-		public ValueTuple<short, short> GetSample(int index, double sampleRate)
+		public ValueTuple<short, short> GetSample(int index, double sampleRate, Tone t)
 		{
 			var time = MidiTimingConverter.GetTime(index, (int)sampleRate);
 
@@ -67,6 +67,7 @@ namespace GroorineCore.Synth
 					vol = 0;
 					break;
 			}
+			if (t != null) t.EnvVolume = vol;
 			short a = (short)(Math.Min(short.MaxValue, Math.Max(short.MinValue, o * vol)));
 			return new ValueTuple<short, short>(a, a);
 

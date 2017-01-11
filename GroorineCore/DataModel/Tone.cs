@@ -11,6 +11,8 @@ namespace GroorineCore.DataModel
 		private double _tick;
 		private int _sampleTick;
 		private double _startTick;
+		private double _envVolume;
+		private int _freq;
 
 		public byte NoteNum { get; }
 
@@ -39,7 +41,18 @@ namespace GroorineCore.DataModel
 			get { return _sampleTick; }
 			set { SetProperty(ref _sampleTick, value); }
 		}
-		
+
+		public double EnvVolume
+		{
+			get { return _envVolume; }
+			set { SetProperty(ref _envVolume, value); }
+		}
+
+		public int Frequency
+		{
+			get => _freq;
+			set => SetProperty(ref _freq, value);
+		}
 
 		public long Gate { get; }
 
@@ -56,6 +69,7 @@ namespace GroorineCore.DataModel
 			Channel = e.Channel;
 			EnvFlag = EnvelopeFlag.Attack;
 			Gate = e.Gate;
+			EnvVolume = 1;
 		}
 
 		/// <summary>
@@ -70,6 +84,7 @@ namespace GroorineCore.DataModel
 			Channel = t.Channel;
 			EnvFlag = t.EnvFlag;
 			Gate = t.Gate;
+			EnvVolume = t.EnvVolume;
 		}
 
 	}

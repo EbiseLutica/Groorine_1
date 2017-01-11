@@ -1,10 +1,11 @@
-﻿using System;
+﻿using GroorineCore.DataModel;
+using System;
 namespace GroorineCore.Synth
 {
 
 	public interface IAudioSource
 	{
-		ValueTuple<short, short> GetSample(int index, double sampleRate);
+		ValueTuple<short, short> GetSample(int index, double sampleRate, Tone tone);
 	}
 
 

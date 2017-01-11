@@ -8,6 +8,7 @@ using System;
 using static System.Math;
 using static GroorineCore.Helpers.MathHelper;
 
+
 namespace GroorineCore
 {
 
@@ -52,6 +53,11 @@ namespace GroorineCore
 		public Player(int sampleRate = 44100)
 		{
 			SampleRate = sampleRate;
+
+			Tracks = new Track[Constants.MaxChannelCount];
+			for (var i = 0; i < Tracks.Length; i++)
+				Tracks[i] = new Track();
+			OnPropertyChanged(nameof(Tracks));
 		}
 
 		public int Tick { get; set; }
@@ -111,7 +117,9 @@ namespace GroorineCore
 							Tick = _preTick = (int)loop;
 							_preTick--;
 							Time = CurrentFile.Conductor.ToMilliSeconds(Tick);
-							firstTime = Time - GetTime(i);
+							firstTime = Time - GetTime(i) - 0.5;
+
+							Tick = CurrentFile.Conductor.ToTick((int)Time);
 							if (LoopCount > 0)
 								LoopCount--;
 							if (LoopCount == 0 && FadeOutTick == null)
@@ -174,10 +182,6 @@ namespace GroorineCore
 			Stop();
 			CurrentFile = gf;
 			OnPropertyChanged(nameof(MaxTime));
-			Tracks = new Track[Constants.MaxChannelCount];
-			for (var i = 0; i < Tracks.Length; i++)
-				Tracks[i] = new Track();
-			OnPropertyChanged(nameof(Tracks));
 
 		}
 
@@ -215,10 +219,28 @@ namespace GroorineCore
 		/// </summary>
 		public void Play(int loopCount = -1, int fadeOutTime = 2000)
 		{
+			if (!IsPausing && !IsPlaying)
+			{
+				Time = Tick = 0;
+				_preTick = -1;
+				ToneInit();
+				TrackReset();
+			}
 			IsPlaying = true;
 			IsPausing = false;
 			LoopCount = loopCount;
 			FadeOutTime = (int)(fadeOutTime * SampleRate * 0.001);
+
+		}
+
+		public void TrackReset()
+		{
+			foreach (Track t in Tracks)
+			{
+				t.ProgramChange = 0;
+				t.Channel = new Channel();
+				t.Rpns.Initialize();
+			}
 		}
 
 		/// <summary>
@@ -226,11 +248,10 @@ namespace GroorineCore
 		/// </summary>
 		public void Stop()
 		{
-			Pause();
+			IsPlaying = false;
 			Time = 0;
 			ToneInit();
 			_preTick = -1;
-			IsPausing = false;
 			FadeOutTick = null;
 		}
 
@@ -248,8 +269,8 @@ namespace GroorineCore
 		/// </summary>
 		public void Pause()
 		{
-			IsPlaying = false;
 			IsPausing = true;
+			IsPlaying = false;
 		}
 
 
@@ -277,6 +298,7 @@ namespace GroorineCore
 			static readonly float[] FreqTable;
 
 			public readonly short[] Rpns;
+			
 
 			static Track()
 			{
@@ -418,11 +440,12 @@ namespace GroorineCore
 				var kake = (Channel.Volume * 0.0078f) * (Channel.Expression * 0.0078f) * (t.Velocity * 0.0078f) * a;
 
 				var freq = FreqTable[t.NoteNum] * Channel.FreqExts;
+				t.Frequency = (int)freq;
 				if (t.Channel == 9)
 					freq = 441 * Channel.FreqExts;
 				at.SetCycle(freq, sampleRate);
 
-				output = il.Source.GetSample(t.SampleTick, sampleRate);
+				output = il.Source.GetSample(t.SampleTick, sampleRate, t);
 				output.Item1 = (short)(output.Item1 * kake * (1 - panrt));
 				output.Item2 = (short)(output.Item2 * kake * panrt);
 

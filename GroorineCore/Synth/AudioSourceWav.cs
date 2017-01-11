@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using GroorineCore.Helpers;
 using System;
+using GroorineCore.DataModel;
 
 namespace GroorineCore.Synth
 {
@@ -81,7 +82,7 @@ namespace GroorineCore.Synth
 		}
 
 
-		public ValueTuple<short, short> GetSample(int index, double sampleRate)
+		public ValueTuple<short, short> GetSample(int index, double sampleRate, Tone t)
 		{
 			var i = index;
 			return Samples.Length <= i ? new ValueTuple<short, short>() : Samples[i];
