@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="dc2e1f85-cf58-4669-9597-474ac15781cf" Publisher="CN=pokem" Version="1.0.0.0" />
+<Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3" IgnorableNamespaces="uap mp uap3">
+  <Identity Name="net.citringo.groorine.player" Publisher="CN=pokem" Version="0.2.0.0" />
   <mp:PhoneIdentity PhoneProductId="dc2e1f85-cf58-4669-9597-474ac15781cf" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>Groorine2</DisplayName>
+    <DisplayName>Groorine Player</DisplayName>
     <PublisherDisplayName>Citringo</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
@@ -15,14 +15,21 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="Groorine2.App">
-      <uap:VisualElements DisplayName="Groorine2" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="Groorine2" BackgroundColor="transparent">
+      <uap:VisualElements DisplayName="Groorine Player" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="A Customizable Closs-platform MIDI Player" BackgroundColor="transparent">
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png">
         </uap:DefaultTile>
         <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#00b294" />
       </uap:VisualElements>
+      <Extensions>
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="groorine">
+            <uap:DisplayName>Groorine Player</uap:DisplayName>
+          </uap:Protocol>
+        </uap:Extension>
+      </Extensions>
     </Application>
   </Applications>
   <Capabilities>
-    <Capability Name="internetClient" />
+    <uap3:Capability Name="backgroundMediaPlayback" />
   </Capabilities>
 </Package>

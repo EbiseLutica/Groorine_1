@@ -44,39 +44,6 @@ namespace Groorine
 		NoLoop, OneLoop, TwoLoop, InfiniteLoop
 	}
 
-	public class ChannelViewModel : BindableBase
-	{
-		private Channel _channel;
-		private IEnumerable<Tone> _tones;
-
-		public Channel Channel
-		{
-			get { return _channel; }
-			set { SetProperty(ref _channel, value); }
-		}
-
-		public IEnumerable<Tone> Tones
-		{
-			get { return _tones; }
-			set { SetProperty(ref _tones, value); }
-		}
-		
-
-		public int ChannelNo { get; }
-
-		public ChannelViewModel(int chNo, Player.Track track)
-		{
-			Channel = track.Channel as Channel;
-			ChannelNo = chNo;
-			Update();
-		}
-
-		public void Update()
-		{
-			Tones = Player.Track.Tones.Where(t => t?.Channel == ChannelNo);
-		}
-	}
-
 	public class MainPageViewModel : BindableBase
 	{
 		private GroorineFileViewModel _currentFile;
@@ -129,23 +96,14 @@ namespace Groorine
 
 		public DelegateCommand ExportCommand { get; private set; }
 
-		public ObservableCollection<ChannelViewModel> Channels
-		{
-			get { return _channels; }
-			set { SetProperty(ref _channels, value); }
-		}
 
 		private short[] _buffer;
 		private bool _isInitialized;
-		private ObservableCollection<ChannelViewModel> _channels;
 
 		public MainPageViewModel()
 		{
 			_musicFiles = new ObservableCollection<StorageFile>();
 			CurrentFile = new GroorineFileViewModel(null);
-			_channels = new ObservableCollection<ChannelViewModel>();
-			for (var i = 0; i < Constants.MaxChannelCount; i++)
-				_channels.Add(new ChannelViewModel(i, new Player.Track()));
 			//_player = new Player();
 			InitializeAsync();
 			DeleteCommand = new DelegateCommand(async (o) =>
@@ -196,7 +154,7 @@ namespace Groorine
 				if (result.Status != AudioFileNodeCreationStatus.Success)
 				{
 					// FileOutputNode creation failed
-					await new MessageDialog("Can't create FileOutputNode! Failed to bounce.").ShowAsync();
+					await new MessageDialog("We couldn't create FileOutputNode, so we failed to bounce.").ShowAsync();
 					return;
 				}
 
@@ -228,11 +186,31 @@ namespace Groorine
 				_graph.Start();
 
 				a.Hide();
-				await new MessageDialog("Mixing has successfully finished!").ShowAsync();
+				await new MessageDialog("Bouncing has successfully finished!").ShowAsync();
 
 
 			});
 
+		}
+
+		internal async Task UpdatePlaylistAsync()
+		{
+			IStorageItem rootDir = await ApplicationData.Current.RoamingFolder.TryGetItemAsync("Music");
+			var dir = rootDir as StorageFolder;
+			if (dir == null)
+				dir = await ApplicationData.Current.RoamingFolder.CreateFolderAsync("Music");
+
+			if ((await dir.GetFilesAsync())?.Count == 0)
+			{
+				var file = await Package.Current.InstalledLocation.TryGetItemAsync("Hello, Groorine.mid") as StorageFile;
+				file?.CopyAsync(dir);
+			}
+
+			IAsyncOperation<IReadOnlyList<StorageFile>> asyncOperation = dir?.GetFilesAsync();
+			if (asyncOperation == null) return;
+			IReadOnlyList<StorageFile> files = await asyncOperation;
+			if (files != null)
+				MusicFiles = new ObservableCollection<StorageFile>(files);
 		}
 
 		public void ChangeLoopMode()
@@ -350,17 +328,10 @@ namespace Groorine
 			IsPlaying = true;
 			CanStop = true;
 			var loopCount =
-				_loopMode == LoopMode.NoLoop
-					? 0
-					: (
-						_loopMode == LoopMode.OneLoop
-							? 1
-							: (
-								_loopMode == LoopMode.TwoLoop
-									? 2
-									: -1
-							)
-					);
+				_loopMode == LoopMode.NoLoop  ? 0
+			  : _loopMode == LoopMode.OneLoop ? 1
+			  :	_loopMode == LoopMode.TwoLoop ? 2
+			  : /*  それいがいのさむしんぐ  */ -1;
 			_player.Play(loopCount, 8000);
 		}
 
@@ -418,41 +389,32 @@ namespace Groorine
 
 
 			IStorageItem rootDir = await ApplicationData.Current.RoamingFolder.TryGetItemAsync("Music");
-			var dir = rootDir as StorageFolder;
-			if (dir == null)
+			if (rootDir == null)
 			{
 				await new MessageDialog("Please restart this app!", "Music Folder is not found!").ShowAsync();
 				return;
 			}
-			MusicFiles.Add(await file.CopyAsync(dir));
-
+			if ((await ImportAsync(file)) is StorageFile f)
+			{
+				MusicFiles.Add(f);
+			}
 		}
 
-		public async void ExportToAudioAsync()
+		public static async Task<StorageFile> ImportAsync(IStorageFile file)
 		{
-			//await new MessageDialog("Groorine is still in development ><", "That feature is not implement yet!").ShowAsync();
-			
+			IStorageItem rootDir = await ApplicationData.Current.RoamingFolder.TryGetItemAsync("Music");
+			var dir = rootDir as StorageFolder;
+			if (dir == null || file == null)
+				return null;
+			if (dir.TryGetItemAsync(file.Name) != null)
+				return await file.CopyAsync(dir, file.Name, Windows.Storage.NameCollisionOption.GenerateUniqueName);
+			return null;
 		}
 
 
 		private async void InitializeAsync()
 		{
-			IStorageItem rootDir = await ApplicationData.Current.RoamingFolder.TryGetItemAsync("Music");
-			var dir = rootDir as StorageFolder;
-			if (dir == null)
-				dir = await ApplicationData.Current.RoamingFolder.CreateFolderAsync("Music");
-
-			if ((await dir.GetFilesAsync())?.Count == 0)
-			{
-				var file = await Package.Current.InstalledLocation.TryGetItemAsync("Hello, Groorine.mid") as StorageFile;
-				file?.CopyAsync(dir);
-			}
-
-			IAsyncOperation<IReadOnlyList<StorageFile>> asyncOperation = dir?.GetFilesAsync();
-			if (asyncOperation == null) return;
-			IReadOnlyList<StorageFile> files = await asyncOperation;
-			if (files != null)
-				MusicFiles = new ObservableCollection<StorageFile>(files);
+			await UpdatePlaylistAsync();
 
 			MasterVolume = 100;
 
