@@ -21,6 +21,15 @@
         <uap:SplashScreen Image="Assets\SplashScreen.png" BackgroundColor="#00b294" />
       </uap:VisualElements>
       <Extensions>
+        <uap:Extension Category="windows.fileTypeAssociation">
+          <uap:FileTypeAssociation Name="midi">
+            <uap:DisplayName>MIDI シーケンス</uap:DisplayName>
+            <uap:SupportedFileTypes>
+              <uap:FileType ContentType="audio/midi">.mid</uap:FileType>
+              <uap:FileType ContentType="audio/midi">.midi</uap:FileType>
+            </uap:SupportedFileTypes>
+          </uap:FileTypeAssociation>
+        </uap:Extension>
         <uap:Extension Category="windows.protocol">
           <uap:Protocol Name="groorine">
             <uap:DisplayName>Groorine Player</uap:DisplayName>

@@ -8,7 +8,7 @@
     xmlns:storage="using:Windows.Storage"
     mc:Ignorable="d" Name="ViewRoot">
 
-	<ListBox  ItemsSource="{Binding MusicFiles}" SelectedItem="{Binding SelectedMusic, Mode=TwoWay}" Tapped="{x:Bind ViewModel.LoadAsync}">
+	<ListBox ItemsSource="{Binding MusicFiles}" SelectedItem="{Binding SelectedMusic, Mode=TwoWay}" Tapped="{x:Bind ViewModel.LoadAsync}">
 		<ListBox.ItemTemplate>
 			<DataTemplate x:DataType="storage:StorageFile">
 				<StackPanel Orientation="Vertical" RightTapped="UIElement_OnRightTapped">
