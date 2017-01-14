@@ -4,6 +4,7 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Globalization;
+using Windows.Storage;
 using Windows.UI;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -17,7 +18,7 @@ namespace Groorine
 	/// <summary>
 	/// Provides application-specific behavior to supplement the default Application class.
 	/// </summary>
-	sealed partial class App
+	sealed partial class App : Application
 	{
 		/// <summary>
 		/// Initializes the singleton application object.  This is the first line of authored code
@@ -29,21 +30,32 @@ namespace Groorine
 			Suspending += OnSuspending;
 		}
 
-		/// <summary>
-		/// Invoked when the application is launched normally by the end user.  Other entry points
-		/// will be used such as when the application is launched to open a specific file.
-		/// </summary>
-		/// <param name="e">Details about the launch request and process.</param>
-		protected override void OnLaunched(LaunchActivatedEventArgs e)
+		protected override void OnActivated(IActivatedEventArgs args)
 		{
+			base.OnActivated(args);
+			Initialize(args);
 
-#if DEBUG
-            if (Debugger.IsAttached)
-            {
-                // This just gets in the way.
-                //this.DebugSettings.EnableFrameRateCounter = true;
-            }
-#endif
+			
+		}
+
+#pragma warning disable IDE1006 // 命名スタイル
+		protected override async void OnFileActivated(FileActivatedEventArgs fe)
+#pragma warning restore IDE1006 // 命名スタイル
+		{
+			base.OnFileActivated(fe);
+			foreach (IStorageItem item in fe.Files)
+			{
+				if (item is IStorageFile file)
+					await MainPageViewModel.ImportAsync(file);
+			}
+			if (Window.Current.Content is MainPage mp && mp.DataContext is MainPageViewModel mpvm)
+				await mpvm.UpdatePlaylistAsync();
+			Initialize(fe);
+
+		}
+
+		private void Initialize(IActivatedEventArgs e)
+		{
 			// Change minimum window size
 			ApplicationView.GetForCurrentView().SetPreferredMinSize(new Size(320, 200));
 
@@ -60,14 +72,14 @@ namespace Groorine
 
 			}
 
-						var shell = Window.Current.Content as MainPage;
+			var shell = Window.Current.Content as MainPage;
 
 			// Do not repeat app initialization when the Window already has content,
 			// just ensure that the window is active
 			if (shell == null)
 			{
 				// Create a AppShell to act as the navigation context and navigate to the first page
-				shell = new MainPage {Language = ApplicationLanguages.Languages[0]};
+				shell = new MainPage { Language = ApplicationLanguages.Languages[0] };
 
 				// Set the default language
 
@@ -86,11 +98,29 @@ namespace Groorine
 			{
 				// When the navigation stack isn't restored, navigate to the first page
 				// suppressing the initial entrance animation.
-				shell.AppFrame.Navigate(typeof(PlaylistView), e.Arguments, new SuppressNavigationTransitionInfo());
+				shell.AppFrame.Navigate(typeof(PlaylistView), new SuppressNavigationTransitionInfo());
 			}
 
 			// Ensure the current window is active
 			Window.Current.Activate();
+		}
+
+		/// <summary>
+		/// Invoked when the application is launched normally by the end user.  Other entry points
+		/// will be used such as when the application is launched to open a specific file.
+		/// </summary>
+		/// <param name="e">Details about the launch request and process.</param>
+		protected override void OnLaunched(LaunchActivatedEventArgs e)
+		{
+
+#if DEBUG
+            if (Debugger.IsAttached)
+            {
+                // This just gets in the way.
+                //this.DebugSettings.EnableFrameRateCounter = true;
+            }
+#endif
+			Initialize(e);
 		}
 
 				/// <summary>
