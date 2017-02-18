@@ -63,7 +63,7 @@ namespace GroorineCore.DataModel
 			return _toMilliSecCache = scoreTempo.MilliSeconds + GetMilliSeconds(tick - scoreTempo.Tick, scoreTempo.Tempo, _resolution);
 		}
 
-		internal ConductorTrack(ObservableCollection<MetaEvent> events, short resolution)
+		public ConductorTrack(ObservableCollection<MetaEvent> events, short resolution)
 		{
 			_resolution = resolution;
 			events = events ?? new ObservableCollection<MetaEvent>();

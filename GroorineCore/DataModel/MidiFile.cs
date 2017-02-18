@@ -93,7 +93,7 @@ namespace GroorineCore.DataModel
 		/// <param name="resolution"></param>
 		/// <param name="title"></param>
 		/// <param name="copyright"></param>
-		internal MidiFile(ConductorTrack ct, ObservableCollection<Track> tracks, short resolution, string title, string copyright, long? loopStart = null)
+		public MidiFile(ConductorTrack ct, ObservableCollection<Track> tracks, short resolution, string title, string copyright, long? loopStart = null)
 		{
 			Tracks = tracks;
 
