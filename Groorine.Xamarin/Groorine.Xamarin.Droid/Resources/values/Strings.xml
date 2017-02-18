@@ -1,5 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="hello">Hello World, Click Me!</string>
 	<string name="app_name">Groorine.Xamarin.Droid</string>
+	<string name="play">Play</string>
+	<string name="stop">Stop</string>
+	<string name="no_project">No Project</string>
+	<string name="no_loop">No Loop</string>
+	<string name="one_time_loop">One Time Loop</string>
+	<string name="two_times_loop">Two Times Loop</string>
+	<string name="infinity_loop">Infinity Loop</string>
+	<string name="bounce">Bounce...</string>
+	<string name="import_from_smf">Import...</string>
+	<string name="delete">Delete</string>
+	<string name="playlist">Playlist</string>
+	<string name="midi_event">MIDI Event</string>
+	<string name="playing">Playing</string>
 </resources>
