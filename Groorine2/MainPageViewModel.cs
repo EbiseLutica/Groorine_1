@@ -20,11 +20,7 @@ using GroorineCore.Api;
 using GroorineCore.Helpers;
 using GroorineCore.Synth;
 using FileAccessMode = GroorineCore.Api.FileAccessMode;
-using System.Diagnostics;
 using System.Threading;
-using Windows.UI.Core;
-using GroorineCore.DataModel;
-using Windows.UI.Xaml.Controls;
 
 namespace Groorine
 {
@@ -119,10 +115,10 @@ namespace Groorine
 				if (!(o is StorageFile)) return;
 				var sf = o as StorageFile;
 				var fsp = new FileSavePicker();
-				fsp.FileTypeChoices.Add("Wave Audio", new List<string>() { ".wav" });
-				fsp.FileTypeChoices.Add("Windows Media Audio", new List<string>() { ".wma" });
-				fsp.FileTypeChoices.Add("MPEG 3 Audio", new List<string>() { ".mp3" });
-				fsp.FileTypeChoices.Add("MPEG 4 Audio", new List<string>() { ".m4a" });
+				fsp.FileTypeChoices.Add("Wave Audio", new List<string> { ".wav" });
+				fsp.FileTypeChoices.Add("Windows Media Audio", new List<string> { ".wma" });
+				fsp.FileTypeChoices.Add("MPEG 3 Audio", new List<string> { ".mp3" });
+				fsp.FileTypeChoices.Add("MPEG 4 Audio", new List<string> { ".m4a" });
 				fsp.SuggestedFileName = sf.DisplayName;
 				fsp.CommitButtonText = "Bounce";
 
@@ -159,9 +155,9 @@ namespace Groorine
 				}
 
 				AudioFileOutputNode node = result.FileOutputNode;
-				
+
 				_graph.Stop();
-				
+
 				_frameInputNode.AddOutgoingConnection(node);
 				Stop();
 				_player.Load(SmfParser.Parse(await sf.OpenStreamForReadAsync()));
@@ -350,15 +346,17 @@ namespace Groorine
 			_player.Stop();
 		}
 
+		private StorageFile _prevFile;
 		public async void LoadAsync()
 		{
-			if (SelectedMusic == null) return;
+			if (SelectedMusic == null || SelectedMusic == _prevFile) return;
 			Stop();
 			_player.Load(SmfParser.Parse(await GetFileAsStreamAsync(SelectedMusic)));
 			CurrentFile = new GroorineFileViewModel(_player.CurrentFile);
 			
 			CanPlay = true;
 			Play();
+			_prevFile = SelectedMusic;
 		}
 
 		

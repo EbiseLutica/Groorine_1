@@ -91,6 +91,7 @@ namespace GroorineTest
 					SetCursorPosition(0, 0);
 					WriteLine($"File: {_ptr - 1}) {(_ptr > 0 ? _files[_ptr - 1] : "NULL")}");
 					WriteLine($"♪ {_player.CorePlayer.CurrentFile?.Title ?? "NULL"} - {_player.CorePlayer.CurrentFile?.Copyright ?? "NULL"}");
+					WriteLine($"LoopPoint: {_player.CorePlayer.CurrentFile?.LoopStart?.ToString() ?? "NULL"}");
 					WriteLine(	"[SPACE]: 再生停止\n" +
 								"[F1]: ToneView\n" +
 								"[F2]: ChannelView");
@@ -153,7 +154,9 @@ namespace GroorineTest
 			try
 			{
 				if (_files.Length > 0)
+				{
 					_player.Play(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _files[_ptr]), _useAutoPlay ? 2 : 2, 8000);
+				}
 			}
 			catch (Exception ex)
 			{
