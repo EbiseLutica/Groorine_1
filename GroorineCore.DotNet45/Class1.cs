@@ -12,6 +12,7 @@ using GPlayer = GroorineCore.Player;
 using P = System.IO.Path;
 using F = System.IO.File;
 using D = System.IO.Directory;
+using GroorineCore.DataModel;
 
 namespace GroorineCore.DotNet45
 {
@@ -162,7 +163,26 @@ namespace GroorineCore.DotNet45
 			});
 		}
 
-	    public async Task StopAsync()
+		public async Task SaveAsync(string path, int loopCount = 2, MidiFile mf = null)
+		{
+			CorePlayer.Stop();
+			if (mf != null)
+				CorePlayer.Load(mf);
+			CorePlayer.Play(loopCount);
+
+			using (var wfw = new WaveFileWriter(path, new WaveFormat()))
+			{
+				while (CorePlayer.IsPlaying)
+				{
+					byte[] b = ToByte(CorePlayer.GetBuffer(_buffer));
+					await wfw.WriteAsync(b, 0, b.Length);
+				}
+			}
+					
+		}
+		
+
+		public async Task StopAsync()
 		{
 			await Task.Run(async () =>
 			{
