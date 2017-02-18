@@ -36,9 +36,9 @@ namespace GroorineCore.DataModel
 		}
 
 
-		private int? _msec;
-		private int _toTickCache;
-		public int ToTick(int msec)
+		private double? _msec;
+		private double _toTickCache;
+		public double ToTick(double msec)
 		{
 			
 			if (_msec != null && _msec.Value == msec)
@@ -50,9 +50,9 @@ namespace GroorineCore.DataModel
 			return _toTickCache = scoreTempo.Tick + GetTickLength(msec - scoreTempo.MilliSeconds, scoreTempo.Tempo, _resolution);
 		}
 
-		private int? _tick;
-		private int _toMilliSecCache;
-		public int ToMilliSeconds(int tick)
+		private double? _tick;
+		private double _toMilliSecCache;
+		public double ToMilliSeconds(double tick)
 		{
 			if (_tick != null && _tick.Value == tick)
 				return _toMilliSecCache;
@@ -75,9 +75,13 @@ namespace GroorineCore.DataModel
 			};
 		}
 
-		public static int GetTickLength(int msec, int tempo, int resolution) => (int)(resolution * (msec * 0.001) * (tempo * 0.0166));
+		public static int GetTickLength(int msec, int tempo, int resolution) => (int)(resolution * (msec * 0.001) * (tempo / 60d) + 0.5);
+
+		public static double GetTickLength(double msec, int tempo, int resolution) => resolution * (msec * 0.001) * (tempo / 60d);
 
 		public static int GetMilliSeconds(int tick, int tempo, int resolution) => (int)(tick / (double)resolution / tempo * 60000.0);
+
+		public static double GetMilliSeconds(double tick, int tempo, int resolution) => tick / resolution / tempo * 60000;
 
 		public List<ScoreTempo> TempoMap { get; private set; }
 

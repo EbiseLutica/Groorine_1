@@ -77,35 +77,14 @@ namespace GroorineCore
 			}
 
 			double firstTime = Time;
-
+			
 			for (var i = 0; i < buf.Length; i += 2)
 			{
-				Time = (long)(firstTime + GetTime(i) + 0.5);
-				Tick = CurrentFile.Conductor.ToTick((int)Time);
+				double realTime = firstTime + GetTime(i);
+				Time = (long)(realTime + 0.5);
+				Tick = (int)CurrentFile.Conductor.ToTick(realTime);
 
 				buf[i] = buf[i + 1] = 0;
-
-				for (var ti = 0; ti < Track.Tones.Length; ti++)
-				{
-					Tone t = Track.Tones[ti];
-
-					if (t == null)
-						continue;
-
-
-					t.Tick = Tick;
-					if (t.RealTick >= t.Gate - 1)
-					{
-						Track.Tones[ti] = null;
-						continue;
-					}
-
-					ValueTuple<short, short> sample = Tracks[t.Channel].Process(ti, SampleRate);
-
-					buf[i] += sample.Item1;
-					buf[i + 1] += sample.Item2;
-
-				}
 
 				if (CurrentFile != null)
 				{
@@ -115,11 +94,13 @@ namespace GroorineCore
 						{
 							long loop = CurrentFile.LoopStart.Value;
 							Tick = _preTick = (int)loop;
-							_preTick--;
-							Time = CurrentFile.Conductor.ToMilliSeconds(Tick);
-							firstTime = Time - GetTime(i) - 0.5;
+							realTime = CurrentFile.Conductor.ToMilliSeconds(Tick);
+							
+							firstTime = realTime - GetTime(i);
 
-							Tick = CurrentFile.Conductor.ToTick((int)Time);
+							_preTick = Tick = (int)CurrentFile.Conductor.ToTick(realTime);
+
+							_preTick--;
 							if (LoopCount > 0)
 								LoopCount--;
 							if (LoopCount == 0 && FadeOutTick == null)
@@ -134,6 +115,7 @@ namespace GroorineCore
 						}
 					}
 
+					
 					if (Tick != _preTick)
 					{
 						foreach (DataModel.Track t in CurrentFile.Tracks)
@@ -147,8 +129,32 @@ namespace GroorineCore
 							}
 						}
 					}
+
+					for (var ti = 0; ti < Track.Tones.Length; ti++)
+					{
+						Tone t = Track.Tones[ti];
+
+						if (t == null)
+							continue;
+
+
+						t.Tick = Tick;
+						if (t.RealTick >= t.Gate - 1)
+						{
+							Track.Tones[ti] = null;
+							continue;
+						}
+
+						ValueTuple<short, short> sample = Tracks[t.Channel].Process(ti, SampleRate);
+
+						buf[i] += sample.Item1;
+						buf[i + 1] += sample.Item2;
+
+					}
+
+
 				}
-				
+
 
 				if (FadeOutTick is int)
 				{
@@ -195,7 +201,7 @@ namespace GroorineCore
 			set { SetProperty(ref _time, value); }
 		}
 
-		public long MaxTime => CurrentFile?.Conductor.ToMilliSeconds((int) CurrentFile.Length) ?? 0;
+		public long MaxTime => (long)(CurrentFile?.Conductor.ToMilliSeconds((int) CurrentFile.Length) ?? 0);
 
 		public bool IsPausing
 		{
