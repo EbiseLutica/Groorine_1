@@ -86,7 +86,9 @@ namespace Groorine.DotNet45
 		
 		public Player(int sampleRate = 44100, int latency = 50)
 		{
-			InitializeAsync(sampleRate, latency).Wait();
+			var task = new Task(async () => await InitializeAsync(sampleRate, latency));
+			task.RunSynchronously();
+			task.Dispose();
 		}
 
 		public bool IsPlaying { get; private set; }
@@ -96,7 +98,7 @@ namespace Groorine.DotNet45
 			_bwp = new BufferedWaveProvider(new WaveFormat(44100, 16, 2));
 			//var mde = new MMDeviceEnumerator();
 			//var mmDevice = mde.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia);
-			await AudioSourceManager.InitializeAsync(new FileSystem());
+			await AudioSourceManager.InitializeAsync(new FileSystem()).ConfigureAwait(false);
 			CorePlayer = new GPlayer(sampleRate);
 			_buffer = CorePlayer.CreateBuffer(latency);
 			//_buffer = new short[882];
