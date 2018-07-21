@@ -6,14 +6,22 @@ Groorine is a cross-platform MIDI player.
 Play a midi music with a built-in midi synthesizer.
 Mixdown a midi-file to audio-file (Now only works in UWP Client)
 
+
+
 ## Now Available
 - UWP ( _But I can only use it... I have no license to publish to WindowsStore. :(_ )
 - .NET4.5 Test Console
 
 [See also...](https://github.com/Citringo/Groorine_1/releases)
 
-## Supported Platform of Client
+## Groorine.AI
+Groorine.AI is a subsystem of Groorine. It can learn songs of midi files and generate a song.
 
+Groorine.AI uses markov chain to learn and generate songs.
+
+## Supported Platform of Clients
+
+### MIDI Player
 - Windows 10 (Universal Windows) (Beta Release)
 - Windows (WPF) (Work In Progress)
 - macOS (Xamarin.Mac) (Not yet)
@@ -21,10 +29,13 @@ Mixdown a midi-file to audio-file (Now only works in UWP Client)
 - iOS (Xamarin.iOS) (Not yet)
 - Android (Xamarin.Android) (Not yet)
 
+### Groorine.AI
+- Windows (WPF)
+
 ## Build
 1. `git clone https://github.com/Citringo/Groorine_1.git`
-1. Open the project file with Visual Studio 2015
-1. Build the project
+1. `nuget restore`
+1. `msbuild`
 
 ## Contributing
 [Issues](/Citringo/Groorine_1/issues)
