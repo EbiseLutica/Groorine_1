@@ -33,6 +33,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Groorine.AI.WPF.App</StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -92,6 +95,20 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Groorine.AI\Groorine.AI.csproj">
+      <Project>{675c40f3-1b2a-4fde-997d-d0e9b130a5e8}</Project>
+      <Name>Groorine.AI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GroorineCore.DotNet45\Groorine.DotNet45.csproj">
+      <Project>{020d8faf-322b-491d-843c-77374f2061da}</Project>
+      <Name>Groorine.DotNet45</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GroorineCore\Groorine.csproj">
+      <Project>{78c9371c-c543-4b1b-91f9-e55e3e602dd1}</Project>
+      <Name>Groorine</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

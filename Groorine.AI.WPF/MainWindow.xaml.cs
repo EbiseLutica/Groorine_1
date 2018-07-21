@@ -1,6 +1,9 @@
-﻿using Microsoft.Win32;
+﻿using Groorine.DataModel;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +26,11 @@ namespace Groorine.AI.WPF
     {
         readonly String version = "0.0.0";
 
+		Student student = new Student();
+
+		MidiFile currentFile;
+		DotNet45.Player player = new DotNet45.Player();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -30,10 +38,17 @@ namespace Groorine.AI.WPF
             LogWrite($"(C)2018 Xeltica");
             LogWrite($"Groorine Core (C)2017 Xeltica");
             LogWrite($"OS: {Environment.OSVersion.VersionString} {(Environment.Is64BitOperatingSystem ? "64bit" : "32bit")}");
-            LogWrite($"\nReady.");
+			LogWrite($"Date: {DateTime.Now.ToShortDateString()}");
+			LogWrite($"\nReady.");
         }
 
-        private void Label_PreviewDragOver(object sender, DragEventArgs e)
+		protected override void OnClosing(CancelEventArgs e)
+		{
+			base.OnClosing(e);
+			player.Dispose();
+		}
+
+		private void Label_PreviewDragOver(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(DataFormats.FileDrop, true))
             {
@@ -46,39 +61,61 @@ namespace Groorine.AI.WPF
             e.Handled = true;
         }
 
-        private void Label_Drop(object sender, DragEventArgs e)
+        private async void Label_Drop(object sender, DragEventArgs e)
         {
             var dropFiles = e.Data.GetData(DataFormats.FileDrop) as string[];
             foreach (var d in dropFiles)
-            {
-                LogWrite($"{d} has been analyzed!");
-            }
+			{
+				await AnalyzeAsync(d);
+			}
         }
 
         private void play_Click(object sender, RoutedEventArgs e)
         {
             LogWrite("Synthesizing a song...");
-            LogWrite("Successfully finished! Playing.");
-        }
+			currentFile = student.Generate(64);
+			if (currentFile == null)
+			{
+				LogWrite("Couldn't start playing because I learn nothing yet.");
+				return;
+			}
+			player.CorePlayer.Load(currentFile);
+			player.PlayAsync();
 
-        private void stop_Click(object sender, RoutedEventArgs e)
+			LogWrite("Successfully finished! Playing.");
+		}
+
+        private async void stop_Click(object sender, RoutedEventArgs e)
         {
+			await player.StopAsync();
             LogWrite("Stopped playing!");
         }
 
         private void clear_Click(object sender, RoutedEventArgs e)
         {
+			student.Clear();
             LogWrite("Clear all learned data.");
         }
 
         private void replay_Click(object sender, RoutedEventArgs e)
-        {
-            LogWrite("Play the analyzed song again");
+		{
+			if (currentFile == null)
+			{
+				LogWrite("Couldn't replay because there is no generated song yet.");
+				return;
+			}
+			player.CorePlayer.Load(currentFile);
+			player.PlayAsync();
+			LogWrite("Playing the analyzed song again.");
         }
 
-        public void LogWrite(object text) => log.Text += text + Environment.NewLine;
+		public void LogWrite(object text)
+		{
+			log.Text += $"[{DateTime.Now.Hour}:{DateTime.Now.Minute}:{DateTime.Now.Second}]" + text + Environment.NewLine;
+			log.ScrollToEnd();
+		}
 
-        private void Label_MouseDown(object sender, MouseButtonEventArgs e)
+        private async void Label_MouseDown(object sender, MouseButtonEventArgs e)
         {
             LogWrite("Selecting files...");
 
@@ -92,7 +129,7 @@ namespace Groorine.AI.WPF
             {
                 foreach (var d in dialog.FileNames)
                 {
-                    LogWrite($"{d} has been analyzed!");
+					await AnalyzeAsync(d);
                 }
             }
             else
@@ -100,5 +137,63 @@ namespace Groorine.AI.WPF
                 LogWrite("Canceled!");
             }
         }
-    }
+
+		public async Task AnalyzeAsync(string path)
+		{
+			try
+			{
+				using (var fs = new FileStream(path, FileMode.Open))
+				{
+					var m = SmfParser.Parse(fs);
+
+					await Task.Factory.StartNew(() => student.Learn(m));
+					LogWrite($"{path} has been analyzed!");
+				}
+			}
+			catch (ArgumentException)
+			{
+				LogWrite("Failed to analyze the file because it wasn't a midi file!");
+			}
+			catch (FileNotFoundException)
+			{
+				LogWrite("Failed to analyze the file because it wasn't found!");
+			}
+			catch (Exception ex)
+			{
+				LogWrite($"Unknown error! {ex.GetType().Name} : {ex.Message}\n{ex.StackTrace}");
+			}
+		}
+
+		private async void Export_Click(object sender, RoutedEventArgs e)
+		{
+			if (currentFile == null)
+			{
+				LogWrite("Couldn't export because there is no generated song yet.");
+				return;
+			}
+			LogWrite("Select a destination to export.");
+
+			var sfd = new SaveFileDialog();
+			sfd.Filter = "Audio File (*.wav)|*.wav";
+			if (sfd.ShowDialog() != true)
+			{
+				LogWrite("Canceled.");
+				return;
+			}
+
+			LogWrite("Start exporting! Please wait...");
+			
+			IsEnabled = false;
+			try
+			{
+				await player.SaveAsync(sfd.FileName);
+				LogWrite("Successfully exported!");
+			}
+			catch (Exception ex)
+			{
+				LogWrite("Couldn't export it due to a unknown error! " + ex.Message);
+			}
+			IsEnabled = true;
+		}
+	}
 }
