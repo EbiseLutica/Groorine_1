@@ -1,4 +1,4 @@
-﻿namespace GroorineCore.Events
+﻿namespace Groorine.Events
 {
 
 	public class NoteEvent : MidiEvent

@@ -1,9 +1,9 @@
 ﻿using System.IO;
-using GroorineCore.Helpers;
+using Groorine.Helpers;
 using System;
-using GroorineCore.DataModel;
+using Groorine.DataModel;
 
-namespace GroorineCore.Synth
+namespace Groorine.Synth
 {
 
 

@@ -1,4 +1,4 @@
-﻿namespace GroorineCore.DataModel
+﻿namespace Groorine.DataModel
 {
 
 	public static class ControlChangeType

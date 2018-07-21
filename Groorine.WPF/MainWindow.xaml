@@ -5,73 +5,97 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Groorine.WPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
-	<DockPanel>
-		<ToolBarPanel DockPanel.Dock="Top">
-			<ToolBar>
-				<Button Content="Play" />
-				<Button Content="Pause"/>
-				<Button Content="Stop" />
-				<Separator/>
-				<Label Content="Lorem ipsum"/>
-				<Button Content="👇"/>
-				<Separator/>
-
-			</ToolBar>
-		</ToolBarPanel>
-		<TabControl>
-			<TabItem Header="Channels">
-				<StackPanel Orientation="Horizontal">
-					<GroupBox Header="Channel" Height="128" HorizontalAlignment="Left" VerticalAlignment="Top">
-					<Grid>
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="8"/>
-							<ColumnDefinition Width="8"/>
-							<ColumnDefinition Width="8"/>
-							<ColumnDefinition Width="16"/>
-						</Grid.ColumnDefinitions>
-						<Grid.RowDefinitions>
-							<RowDefinition Height="12"/>
-							<RowDefinition/>
-							<RowDefinition Height="8"/>
-							<RowDefinition Height="8"/>
-						</Grid.RowDefinitions>
-						<Grid.Resources>
-							<Style TargetType="ProgressBar">
-								<Setter Property="Margin" Value="1"/>
-								<Setter Property="Orientation" Value="Vertical"/>
-								<Setter Property="Foreground">
-									<Setter.Value>
-										<LinearGradientBrush EndPoint="68,0" ColorInterpolationMode="ScRgbLinearInterpolation" MappingMode="Absolute" StartPoint="0,0" >
-											<LinearGradientBrush.GradientStops>
-												<GradientStop Color="Red" Offset="1"/>
-												<GradientStop Color="Orange" Offset="0.9"/>
-												<GradientStop Color="LimeGreen" Offset="0.7"/>
-												<GradientStop Color="DarkBlue" Offset="0"/>
-											</LinearGradientBrush.GradientStops>
-										</LinearGradientBrush>
-									</Setter.Value>
-								</Setter>
-							</Style>
-							<Style TargetType="TextBlock">
-								<Setter Property="FontFamily" Value="MS Gothic"/>
-								<Setter Property="FontSize" Value="12"/>
-								<Setter Property="Margin" Value="1"/>
-								<Setter Property="HorizontalAlignment" Value="Center"/>
-							</Style>
-						</Grid.Resources>
-						<TextBlock Text="V" Grid.Column="0"/>
-						<TextBlock Text="E" Grid.Column="1"/>
-						<TextBlock Text="N" Grid.Column="2"/>
-						<TextBlock Text="O" Grid.Column="3"/>
-						<ProgressBar Grid.Row="1" Grid.Column="0"/>
-						<ProgressBar Grid.Row="1" Grid.Column="1"/>
-						<ProgressBar Grid.Row="1" Grid.Column="2"/>
-						<ProgressBar Grid.Row="1" Grid.Column="3"/>
-					</Grid>
-					</GroupBox>
-				</StackPanel>
-			</TabItem>
-		</TabControl>
-	</DockPanel>
+        Title="MainWindow" Height="480" Width="640">
+    <Window.DataContext>
+        <local:MainWindowViewModel/>
+    </Window.DataContext>
+    <DockPanel>
+        <ToolBarPanel DockPanel.Dock="Top">
+            <ToolBar>
+                <Button Content="Play" Command=""/>
+                <Button Content="Pause"/>
+                <Button Content="Stop" />
+                <Separator/>
+                <Label Content="Import"/>
+                <Button Content="Bounce"/>
+                <Separator/>
+                <Slider Width="240"/>
+            </ToolBar>
+        </ToolBarPanel>
+        <TabControl>
+            <TabItem Header="Playlist">
+                <ListView ItemsSource="{Binding Files}">
+                    <ListView.ItemTemplate>
+                        <ItemContainerTemplate>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Name}" FontSize="18"/>
+                                <TextBlock Text="{Binding Copyright}" FontSize="11" Foreground="Gray"/>
+                            </StackPanel>
+                        </ItemContainerTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
+            </TabItem>
+            <TabItem Header="Channels">
+                <ItemsControl ItemsSource="{Binding Channels}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <ItemContainerTemplate>
+                            <GroupBox Header="Channel" Height="128" HorizontalAlignment="Left" VerticalAlignment="Top">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="8"/>
+                                        <ColumnDefinition Width="8"/>
+                                        <ColumnDefinition Width="8"/>
+                                        <ColumnDefinition Width="16"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="12"/>
+                                        <RowDefinition/>
+                                        <RowDefinition Height="8"/>
+                                        <RowDefinition Height="8"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.Resources>
+                                        <Style TargetType="ProgressBar">
+                                            <Setter Property="Margin" Value="1"/>
+                                            <Setter Property="Orientation" Value="Vertical"/>
+                                            <Setter Property="Foreground">
+                                                <Setter.Value>
+                                                    <LinearGradientBrush EndPoint="68,0" ColorInterpolationMode="ScRgbLinearInterpolation" MappingMode="Absolute" StartPoint="0,0" >
+                                                        <LinearGradientBrush.GradientStops>
+                                                            <GradientStop Color="Red" Offset="1"/>
+                                                            <GradientStop Color="Orange" Offset="0.9"/>
+                                                            <GradientStop Color="LimeGreen" Offset="0.7"/>
+                                                            <GradientStop Color="DarkBlue" Offset="0"/>
+                                                        </LinearGradientBrush.GradientStops>
+                                                    </LinearGradientBrush>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="FontFamily" Value="MS Gothic"/>
+                                            <Setter Property="FontSize" Value="12"/>
+                                            <Setter Property="Margin" Value="1"/>
+                                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        </Style>
+                                    </Grid.Resources>
+                                    <TextBlock Text="V" Grid.Column="0"/>
+                                    <TextBlock Text="E" Grid.Column="1"/>
+                                    <TextBlock Text="N" Grid.Column="2"/>
+                                    <TextBlock Text="O" Grid.Column="3"/>
+                                    <ProgressBar Grid.Row="1" Grid.Column="0"/>
+                                    <ProgressBar Grid.Row="1" Grid.Column="1"/>
+                                    <ProgressBar Grid.Row="1" Grid.Column="2"/>
+                                    <ProgressBar Grid.Row="1" Grid.Column="3"/>
+                                </Grid>
+                            </GroupBox>
+                        </ItemContainerTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </TabItem>
+        </TabControl>
+    </DockPanel>
 </Window>

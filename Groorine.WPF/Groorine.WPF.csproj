@@ -95,13 +95,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\GroorineCore.DotNet45\GroorineCore.DotNet45.csproj">
+    <ProjectReference Include="..\GroorineCore.DotNet45\Groorine.DotNet45.csproj">
       <Project>{020d8faf-322b-491d-843c-77374f2061da}</Project>
-      <Name>GroorineCore.DotNet45</Name>
+      <Name>Groorine.DotNet45</Name>
     </ProjectReference>
-    <ProjectReference Include="..\GroorineCore\GroorineCore.csproj">
+    <ProjectReference Include="..\GroorineCore\Groorine.csproj">
       <Project>{78c9371c-c543-4b1b-91f9-e55e3e602dd1}</Project>
-      <Name>GroorineCore</Name>
+      <Name>Groorine</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

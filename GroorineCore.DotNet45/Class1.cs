@@ -4,17 +4,17 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using GroorineCore.Api;
-using GroorineCore.Synth;
+using Groorine.Api;
+using Groorine.Synth;
 using NAudio.CoreAudioApi;
 using NAudio.Wave;
-using GPlayer = GroorineCore.Player;
+using GPlayer = Groorine.Player;
 using P = System.IO.Path;
 using F = System.IO.File;
 using D = System.IO.Directory;
-using GroorineCore.DataModel;
+using Groorine.DataModel;
 
-namespace GroorineCore.DotNet45
+namespace Groorine.DotNet45
 {
 	public class FileSystem : IFileSystem
 	{

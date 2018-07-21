@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
-using GroorineCore.DataModel;
-using GroorineCore.Synth;
+using Groorine.DataModel;
+using Groorine.Synth;
 
-namespace GroorineCore.Helpers
+namespace Groorine.Helpers
 {
 
 	public static class FileUtility

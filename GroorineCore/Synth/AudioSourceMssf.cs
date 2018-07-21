@@ -1,8 +1,8 @@
 ﻿using System;
-using GroorineCore.DataModel;
-using GroorineCore.Helpers;
+using Groorine.DataModel;
+using Groorine.Helpers;
 
-namespace GroorineCore.Synth
+namespace Groorine.Synth
 {
 
 	public class AudioSourceMssf : IAudioSource

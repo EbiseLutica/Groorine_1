@@ -1,9 +1,9 @@
 ﻿using System.Collections.ObjectModel;
 using System.Linq;
-using GroorineCore.Events;
-using GroorineCore.Helpers;
+using Groorine.Events;
+using Groorine.Helpers;
 
-namespace GroorineCore.DataModel
+namespace Groorine.DataModel
 {
 	/// <summary>
 	/// MIDI ファイルのデータ構造を表現します。

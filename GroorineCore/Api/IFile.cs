@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
 
-namespace GroorineCore.Api
+namespace Groorine.Api
 {
 	public interface IFile
 	{

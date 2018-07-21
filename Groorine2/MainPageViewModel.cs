@@ -15,11 +15,11 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
-using GroorineCore;
-using GroorineCore.Api;
-using GroorineCore.Helpers;
-using GroorineCore.Synth;
-using FileAccessMode = GroorineCore.Api.FileAccessMode;
+using Groorine;
+using Groorine.Api;
+using Groorine.Helpers;
+using Groorine.Synth;
+using FileAccessMode = Groorine.Api.FileAccessMode;
 using System.Threading;
 
 namespace Groorine

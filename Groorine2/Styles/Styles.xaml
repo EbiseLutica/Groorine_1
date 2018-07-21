@@ -22,9 +22,13 @@
 	<!-- padding between window title bar and content-->
     <x:Double x:Key="DesktopWindowTopPadding">0</x:Double>
 
-	<SolidColorBrush x:Key="GroorineBrandLightBrush" Color="{StaticResource GroorineBrandLightColor}"/>
+    <AcrylicBrush x:Key="GroorineBrandLightBrush" TintColor="{StaticResource GroorineBrandLightColor}" TintOpacity="0.8"/>
+    <AcrylicBrush x:Key="GroorineBrandDarkBrush" TintColor="{StaticResource GroorineBrandDarkColor}" TintOpacity="0.8"/>
+    <AcrylicBrush x:Key="GroorineBrandForegroundBrush" TintColor="{StaticResource GroorineBrandForegroundColor}" TintOpacity="0.8"/>
+
+    <!--<SolidColorBrush x:Key="GroorineBrandLightBrush" Color="{StaticResource GroorineBrandLightColor}"/>
 	<SolidColorBrush x:Key="GroorineBrandDarkBrush" Color="{StaticResource GroorineBrandDarkColor}"/>
-	<SolidColorBrush x:Key="GroorineBrandForegroundBrush" Color="{StaticResource GroorineBrandForegroundColor}"/>
+	<SolidColorBrush x:Key="GroorineBrandForegroundBrush" Color="{StaticResource GroorineBrandForegroundColor}"/>-->
 	<Color x:Key="GroorineBrandLightColor">#FF00B294</Color>
 	<Color x:Key="GroorineBrandDarkColor">#FF038387</Color>
 	<Color x:Key="GroorineBrandForegroundColor">White</Color>

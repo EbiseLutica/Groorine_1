@@ -1,7 +1,7 @@
 ﻿using System;
-using GroorineCore.Helpers;
+using Groorine.Helpers;
 
-namespace GroorineCore.DataModel
+namespace Groorine.DataModel
 {
 	public class Channel : BindableBase, IChannel
 	{

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
-using GroorineCore.DataModel;
-using GroorineCore.Events;
-using GroorineCore.Helpers;
-using static GroorineCore.Helpers.MidiTimingConverter;
+using Groorine.DataModel;
+using Groorine.Events;
+using Groorine.Helpers;
+using static Groorine.Helpers.MidiTimingConverter;
 
-namespace GroorineCore
+namespace Groorine
 {
 	/// <summary>
 	/// Standard MIDI File を Groorine プロジェクト形式としてインポートする機能を提供します。このクラスは継承できません。

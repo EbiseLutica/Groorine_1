@@ -1,7 +1,7 @@
 ﻿using System;
-using GroorineCore.Helpers;
+using Groorine.Helpers;
 
-namespace GroorineCore.Synth
+namespace Groorine.Synth
 {
 
 	/// <summary>

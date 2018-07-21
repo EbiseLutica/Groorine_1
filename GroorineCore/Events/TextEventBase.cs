@@ -1,4 +1,4 @@
-﻿namespace GroorineCore.Events
+﻿namespace Groorine.Events
 {
 
 	public abstract class TextEventBase : MetaEvent

@@ -1,5 +1,5 @@
-﻿using GroorineCore.DataModel;
-using GroorineCore.Helpers;
+﻿using Groorine.DataModel;
+using Groorine.Helpers;
 
 namespace Groorine
 {

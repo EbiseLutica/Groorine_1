@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace GroorineCore.Api
+namespace Groorine.Api
 {
 	public interface IFolder
 	{

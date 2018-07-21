@@ -1,4 +1,4 @@
-﻿namespace GroorineCore.Helpers
+﻿namespace Groorine.Helpers
 {
 	internal static class MidiTimingConverter
 	{

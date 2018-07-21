@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using GroorineCore.Api;
-using GroorineCore.Helpers;
+using Groorine.Api;
+using Groorine.Helpers;
 
-namespace GroorineCore.Synth
+namespace Groorine.Synth
 {
 
 	public class AudioSourceManager

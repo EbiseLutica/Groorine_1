@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace GroorineCore.Helpers
+namespace Groorine.Helpers
 {
 	internal static class ReaderExtensions
 	{

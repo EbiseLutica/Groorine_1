@@ -75,7 +75,8 @@ namespace Groorine
 				CheckTogglePaneButtonSizeChanged();
 
 				CoreApplicationViewTitleBar titleBar = CoreApplication.GetCurrentView().TitleBar;
-				titleBar.IsVisibleChanged += TitleBar_IsVisibleChanged;
+                titleBar.IsVisibleChanged += TitleBar_IsVisibleChanged;
+                titleBar.ExtendViewIntoTitleBar = true;
 			};
 
 			RootSplitView.RegisterPropertyChangedCallback(

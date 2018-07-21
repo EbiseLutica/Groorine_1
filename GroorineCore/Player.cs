@@ -1,15 +1,15 @@
 ﻿using System.Linq;
-using GroorineCore.Api;
-using GroorineCore.DataModel;
-using GroorineCore.Events;
-using GroorineCore.Helpers;
-using GroorineCore.Synth;
+using Groorine.Api;
+using Groorine.DataModel;
+using Groorine.Events;
+using Groorine.Helpers;
+using Groorine.Synth;
 using System;
 using static System.Math;
-using static GroorineCore.Helpers.MathHelper;
+using static Groorine.Helpers.MathHelper;
 
 
-namespace GroorineCore
+namespace Groorine
 {
 
 	public delegate void BufferCallbackEventHandler(object sender, short[] buffer);

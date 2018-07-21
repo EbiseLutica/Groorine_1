@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace GroorineCore.Synth
+namespace Groorine.Synth
 {
 	public class InstrumentList : List<IInstrument>
 	{

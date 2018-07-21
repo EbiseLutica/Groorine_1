@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace GroorineCore.Helpers
+namespace Groorine.Helpers
 {
 	public static class MathHelper
 	{

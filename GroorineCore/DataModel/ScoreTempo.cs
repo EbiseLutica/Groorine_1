@@ -1,4 +1,4 @@
-﻿namespace GroorineCore.DataModel
+﻿namespace Groorine.DataModel
 {
 
 	/// <summary>

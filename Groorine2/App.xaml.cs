@@ -66,6 +66,7 @@ namespace Groorine
 			{
 				var t = (Color)Current.Resources["GroorineBrandLightColor"];
 				titleBar.BackgroundColor = titleBar.ButtonBackgroundColor = t;
+             
 				titleBar.ButtonPressedForegroundColor = titleBar.ButtonHoverForegroundColor = (Color)Current.Resources["GroorineBrandForegroundColor"];
 				titleBar.ButtonHoverBackgroundColor = Color.FromArgb(255, 51, 193, 169);
 				titleBar.ButtonPressedBackgroundColor = Color.FromArgb(255, 25, 186, 158);

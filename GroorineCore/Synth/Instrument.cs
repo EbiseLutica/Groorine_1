@@ -1,7 +1,7 @@
 ﻿using System;
-using GroorineCore.DataModel;
+using Groorine.DataModel;
 
-namespace GroorineCore.Synth
+namespace Groorine.Synth
 {
 
 	public class Instrument : IInstrument

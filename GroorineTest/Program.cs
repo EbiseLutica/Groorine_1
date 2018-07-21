@@ -2,17 +2,15 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using GroorineCore.DataModel;
-using GroorineCore.DotNet45;
-using GC = GroorineCore;
+using Groorine.DataModel;
+using GC = Groorine;
 using System.Threading;
 using static System.Console;
 using System.Windows;
 
-namespace GroorineTest
+namespace Groorine.Console
 {
-
-	class Program
+    class Program
 	{
 		static string Arrow(int length, double rate)
 		{
@@ -26,7 +24,7 @@ namespace GroorineTest
 			Channel
 		}
 
-		static Player _player;
+		static DotNet45.Player _player;
 		private static bool _useAutoPlay;
 		static void Main(string[] args)
 		{
@@ -55,7 +53,7 @@ namespace GroorineTest
 			}
 			
 
-			_player = new Player(latency: 25);
+			_player = new DotNet45.Player(latency: 25);
 
 			//Console.CancelKeyPress += async (s, e) =>
 			//{

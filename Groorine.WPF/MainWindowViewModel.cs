@@ -1,6 +1,6 @@
-﻿using GroorineCore;
-using GroorineCore.DataModel;
-using GroorineCore.Helpers;
+﻿using Groorine;
+using Groorine.DataModel;
+using Groorine.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

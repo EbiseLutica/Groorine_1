@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace GroorineCore.Events
+namespace Groorine.Events
 {
 
 	public class SysExEvent : MidiEvent

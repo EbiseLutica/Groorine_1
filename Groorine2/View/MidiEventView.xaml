@@ -5,9 +5,9 @@
     xmlns:local="using:Groorine.View"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:groorineCore="using:GroorineCore"
-    xmlns:dataModel="using:GroorineCore.DataModel"
-    xmlns:events="using:GroorineCore.Events"
+    xmlns:groorineCore="using:Groorine"
+    xmlns:dataModel="using:Groorine.DataModel"
+    xmlns:events="using:Groorine.Events"
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">

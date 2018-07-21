@@ -1,4 +1,4 @@
-﻿namespace GroorineCore.Api
+﻿namespace Groorine.Api
 {
 	public static class Constants
 	{

@@ -1,7 +1,7 @@
 ﻿using System;
-using GroorineCore.Helpers;
+using Groorine.Helpers;
 
-namespace GroorineCore.DataModel
+namespace Groorine.DataModel
 {
 	/// <summary>
 	/// 任意の比較可能な型の特定の範囲を表します。

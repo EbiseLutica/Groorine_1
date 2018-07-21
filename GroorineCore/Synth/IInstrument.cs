@@ -1,6 +1,6 @@
-﻿using GroorineCore.DataModel;
+﻿using Groorine.DataModel;
 
-namespace GroorineCore.Synth
+namespace Groorine.Synth
 {
 
 	public interface IInstrument
