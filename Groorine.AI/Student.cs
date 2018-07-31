@@ -11,7 +11,33 @@ namespace Groorine.AI
 	{
 		private Dictionary<Key, List<Unit>>[] units;
 
-		private List<int> bpmList = new List<int>();
+		/// <summary>
+		/// BPM候補。
+		/// </summary>
+		private List<int> bpmCandidates;
+
+		/// <summary>
+		/// 始点のユニット候補。
+		/// </summary>
+		private List<Unit>[] startUnitCandidates;
+
+		/// <summary>
+		/// プログラムチェンジの候補。
+		/// </summary>
+		private List<int>[] pcCandidates;
+
+		public Student()
+		{
+			bpmCandidates = new List<int>();
+
+			startUnitCandidates = new List<Unit>[16];
+			for (int i = 0; i < startUnitCandidates.Length; i++)
+				startUnitCandidates[i] = new List<Unit>();
+
+			pcCandidates = new List<int>[16];
+			for (int i = 0; i < pcCandidates.Length; i++)
+				pcCandidates[i] = new List<int>();
+		}
 
 		internal Unit AddUnit(Key key, int ch, Unit unit)
 		{
@@ -27,21 +53,24 @@ namespace Groorine.AI
 		public void Clear()
 		{
 			units = null;
-			bpmList.Clear();
-			bpmList.Add(120);
+			bpmCandidates.Clear();
+			bpmCandidates.Add(120);
+
+			for (int i = 0; i < startUnitCandidates.Length; i++)
+				startUnitCandidates[i].Clear();
+
+			for (int i = 0; i < pcCandidates.Length; i++)
+				pcCandidates[i].Clear();
 		}
 
 		public void Learn(MidiFile mf)
 		{
-			bpmList.AddRange(mf.Conductor.TempoMap.Select(t => t.Tempo));
+			bpmCandidates.AddRange(mf.Conductor.TempoMap.Select(t => t.Tempo));
 			// 全イベントのデータを複製し、チャンネルごとに分ける
 			var dataSource = mf.Tracks
-				// ノートイベントを抽出
-				.Select(t => t.Events.OfType<NoteEvent>())
 				// 一次元化する
-				.SelectMany(t => t)
-				// tick順にソート
-				.OrderBy(n => n.Tick)
+				.SelectMany(t => t.Events)
+				.OfType<NoteEvent>()
 				// すべてNoteEventExに変換
 				.Select(n => new NoteEventEx { Channel = n.Channel, Gate = n.Gate, Note = n.Note, Tick = n.Tick, Velocity = n.Velocity })
 				// チャンネルでグループ化
@@ -58,6 +87,7 @@ namespace Groorine.AI
 			foreach (var events in dataSource)
 			{
 				Unit prevUnit = default;
+
 				for (int i = 0; i < events.Length - 1; i++)
 				{
 					var current = events[i];
@@ -79,14 +109,21 @@ namespace Groorine.AI
 
 					// 登録
 					prevUnit = AddUnit(key, count, new Unit { Notes = current.ToArray() });
+
+					// 始点候補の登録
+					if (i == 0)
+						startUnitCandidates[count].Add(prevUnit);
 				}
 				count++;
 			}
+
+			// プログラムチェンジ候補
+			mf.Tracks.SelectMany(t => t.Events).OfType<ProgramEvent>().ToList().ForEach(t => pcCandidates[t.Channel].Add(t.ProgramNo));
 		}
 
 		public MidiFile Generate(int size)
 		{
-			var ct = new ConductorTrack(new ObservableCollection<MetaEvent>(new List<TempoEvent>() { new TempoEvent { Tempo = bpmList.Random() } }), 480);
+			var ct = new ConductorTrack(new ObservableCollection<MetaEvent>(new List<TempoEvent>() { new TempoEvent { Tempo = bpmCandidates.Random() } }), 480);
 			var tracks = new ObservableCollection<Track>();
 			var drumIsAvailable = Extension.Random(10) < 5;
 			var channels = Extension.Random(1, 17);
@@ -97,7 +134,12 @@ namespace Groorine.AI
 				var events = new ObservableCollection<MidiEvent>();
 				if (units[ch] == null)
 					continue;
-				var unit = units[ch].ToList().Random().Value.Random();
+
+				events.Add(new ProgramEvent { Channel = (byte)ch, ProgramNo = (byte)pcCandidates[ch].Random() });
+
+				var unit = startUnitCandidates[ch].Random();
+
+				unit = unit ?? units[ch].ToList().Random().Value.Random();
 
 				if (unit == default)
 					continue;
@@ -118,7 +160,7 @@ namespace Groorine.AI
 					unit = units[ch][unit.Candidates.Random()].Random();
 					currentTick += unit.Notes[0].Gate + unit.Notes[0].Wait;
 				}
-
+				events.Add(new EndOfTrackEvent { Channel = (byte)ch, Tick = currentTick });
 				tracks.Add(new Track(events));
 			}
 
