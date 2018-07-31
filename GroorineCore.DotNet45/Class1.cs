@@ -149,14 +149,6 @@ namespace Groorine.DotNet45
 
 					_bwp.AddSamples(b, 0, b.Length);
 
-					/*Console.SetCursorPosition(0, 0);
-					Console.WriteLine($"{bwp?.BufferedBytes:#######0} {bwp?.BufferLength:#######0} {player?.Time:#######0} {player?.CurrentFile?.Length:#######0} {delta:###0} {Player.Track.Tones.Count(t => t != null):#0}");
-					foreach (Tone t in Player.Track.Tones)
-						if (t != null)
-							Console.WriteLine($"CH{t.Channel:#0} ♪{t.NoteNum:##0} V{t.Velocity:##0} {Enum.GetName(typeof(EnvelopeFlag), t.EnvFlag).PadRight(7)} G{t.Gate:####0} ST{t.StartTick:##0.0} T{t.Tick:##0.0}");
-						else
-							Console.WriteLine();*/
-
 					while (_bwp.BufferedBytes > _buffer.Length * 8)
 						await Task.Delay(1);
 
