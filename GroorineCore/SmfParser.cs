@@ -24,6 +24,11 @@ namespace Groorine
 			return a;
 		}
 
+		/// <summary>
+		/// スタンダード MIDI ファイルを読み込み解析します。
+		/// </summary>
+		/// <param name="data"></param>
+		/// <returns></returns>
 		public static MidiFile Parse(Stream data)
 		{
 			var tracks = new ObservableCollection<Track>();
@@ -36,20 +41,20 @@ namespace Groorine
 			{
 
 				// Magic Number MThd
-				if (new string(br.ReadChars(4)) != "MThd")
+				if (br.ReadString(4) != "MThd")
 				{
 					throw new ArgumentException("SMF ファイルではないファイルを読み込もうとしました");
 				}
 
-				var chunklen = br.ReadInt32Be();
-				var format = br.ReadInt16Be();
-				var trackNum = br.ReadInt16Be();
-				var resolution = br.ReadInt16Be();
+				var chunklen = br.ReadInt32BE();
+				var format = br.ReadInt16BE();
+				var trackNum = br.ReadInt16BE();
+				var resolution = br.ReadInt16BE();
 
 				for (var i = 0; i < trackNum; i++)
 				{
 					br.ReadBytes(4);
-					var size = br.ReadInt32Be();
+					var size = br.ReadInt32BE();
 					var events = new ObservableCollection<MidiEvent>();
 					Track mt;
 					tracks.Add(mt = new Track(events));
@@ -338,6 +343,129 @@ namespace Groorine
 				}
 				return new MidiFile(new ConductorTrack(metas, resolution), tracks, resolution, title, copyright, loopStart);
 			}
+		}
+
+		/// <summary>
+		/// Format 1 のスタンダード MIDI ファイル形式で書き出します。
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="mf"></param>
+		public static void Save(Stream output, MidiFile mf)
+		{
+			using (var writer = new BinaryWriter(output))
+			{
+
+				// header
+				writer.WriteString("MThd");
+
+				// data length
+				writer.WriteBE(6);
+
+				// format version
+				writer.WriteBE((short)1);
+
+				// track count
+				writer.WriteBE((short)mf.Tracks.Count);
+
+				// resolution
+				writer.WriteBE(mf.Resolution);
+
+				// 指揮者トラックと楽曲トラックに含まれる全データを処理する
+				foreach (IEnumerable<MidiEvent> track in new List<IEnumerable<MidiEvent>> { mf.Conductor.Events.Cast<MidiEvent>() }.Concat(mf.Tracks.Select(t => t.Events)))
+				{
+					// トラックごとにメモリ上に一旦書き出す(チャンクの長さを取るため)
+					var ms = new MemoryStream();
+
+					using (var trackWriter = new BinaryWriter(ms))
+					{
+						void WriteAll(params byte[] bytes)
+						{
+							trackWriter.Write(bytes);
+						}
+						
+
+						foreach (MidiEvent e in track.OrderBy(e => e.Tick))
+						{
+							int prevTick = 0;
+							int tick = (int)e.Tick;
+
+							// デルタタイム
+							// 前回のtickとの差分を取る。和音なら同じtickなので0になる
+							trackWriter.WriteVariableLength(tick - prevTick);
+							
+							switch (e)
+							{
+								case BeatEvent b:
+									WriteAll(0xff, 0x58, 4, (byte)b.Rhythm, (byte)Math.Log(b.Note, 2), 0x18, 0x8);
+									break;
+								case ChannelPressureEvent cp:
+									WriteAll((byte)(0xD0 + cp.Channel), cp.Pressure);
+									break;
+								case CommentEvent cmt:
+									WriteAll(0xFF, 0x01);
+									trackWriter.WriteVariableLength(cmt.Text.Length);
+									trackWriter.WriteString(cmt.Text);
+									break;
+								case ControlEvent cc:
+									WriteAll((byte)(0xB0 + cc.Channel), cc.ControlNo, cc.Data);
+									break;
+								case EndOfTrackEvent eot:
+									WriteAll(0xff, 0x2f, 0x00);
+									break;
+								case LyricsEvent ly:
+									WriteAll(0xFF, 0x05);
+									trackWriter.WriteVariableLength(ly.Text.Length);
+									trackWriter.WriteString(ly.Text);
+									break;
+								case NoteEvent n:
+									//note on
+									WriteAll((byte)(0x90 + n.Channel), n.Note, n.Velocity);
+
+									//note off
+									trackWriter.WriteVariableLength((int)n.Gate);
+									WriteAll((byte)(0x90 + n.Channel), n.Note, 0);
+
+									tick += (int)n.Gate;
+									break;
+								case PitchEvent pb:
+									var msb = (byte)(((pb.Bend + 8192) >> 8) & 0x7f);
+									var lsb = (byte)((pb.Bend + 8192) & 0x7f);
+									WriteAll((byte)(0xE0 + pb.Channel), msb, lsb);
+									break;
+								case PolyphonicKeyPressureEvent pkp:
+									WriteAll((byte)(0xA0 + pkp.Channel), pkp.NoteNumber, pkp.Pressure);
+									break;
+								case ProgramEvent pc:
+									WriteAll((byte)(0xC0 + pc.Channel), pc.ProgramNo); 
+									break;
+								case SysExEvent sysex:
+									trackWriter.Write((byte)0xf0);
+									trackWriter.WriteVariableLength(sysex.Data.Length);
+									trackWriter.Write(sysex.Data);
+									trackWriter.Write((byte)0xf7);
+									break;
+								case TempoEvent tempo:
+									var t = Math.Min(1677215, 60000000 / tempo.Tempo);
+									WriteAll(0xff, 0x51, 0x03);
+									trackWriter.Write(BitConverter.GetBytes(t).Take(3).Reverse().ToArray());
+									break;
+							}
+							prevTick = tick;
+						}
+
+						// 実際に書き込む
+
+						// マジックナンバー
+						writer.WriteString("MTrk");
+						// 長さ
+						writer.WriteBE((int)ms.Length);
+						// データを書いて終わり
+						ms.WriteTo(output);
+					}
+				}
+				writer.Flush();
+			}
+
 		}
 	}
 }

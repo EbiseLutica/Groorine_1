@@ -195,5 +195,37 @@ namespace Groorine.AI.WPF
 			}
 			IsEnabled = true;
 		}
+
+		private void Save_Click(object sender, RoutedEventArgs e)
+		{
+			if (currentFile == null)
+			{
+				LogWrite("Couldn't export because there is no generated song yet.");
+				return;
+			}
+			LogWrite("Select a destination to save.");
+
+			var sfd = new SaveFileDialog();
+			sfd.Filter = "Standard MIDI File (*.mid, *.midi)|*.mid;*.midi";
+			if (sfd.ShowDialog() != true)
+			{
+				LogWrite("Canceled.");
+				return;
+			}
+
+			LogWrite("Start saving! Please wait...");
+
+			IsEnabled = false;
+			try
+			{
+				SmfParser.Save(new FileStream(sfd.FileName, FileMode.Create, FileAccess.Write), currentFile);
+				LogWrite("Successfully exported!");
+			}
+			catch (Exception ex)
+			{
+				LogWrite("Couldn't export it due to a unknown error! " + ex.Message);
+			}
+			IsEnabled = true;
+		}
 	}
 }

@@ -21,7 +21,8 @@
                 <Button x:Name="play" Click="play_Click" FontSize="16" Width="80" Margin="0,0,8,0" ToolTip="Generate a song and play it.">Play</Button>
                 <Button x:Name="replay" Click="replay_Click" FontSize="16" Width="80" Margin="0,0,8,0" ToolTip="Replay a generated song.">Replay</Button>
 				<Button x:Name="stop" Click="stop_Click" FontSize="16" Width="80" Margin="0,0,8,0" ToolTip="Stop a playing song.">Stop</Button>
-				<Button x:Name="Export" Click="Export_Click" FontSize="16" Width="80" Margin="0,0,8,0" ToolTip="Export a generated song as a wav file.">Export</Button>
+				<Button x:Name="Save" Click="Save_Click" FontSize="16" Width="80" Margin="0,0,8,0" ToolTip="Save a generate song as a midi file." Content="Save SMF"/>
+				<Button x:Name="Export" Click="Export_Click" FontSize="16" Width="80" Margin="0,0,8,0" ToolTip="Export a generated song as a wav file." Content="Export &#xa;WAV File"/>
 				<Button x:Name="clear" Click="clear_Click" FontSize="16" Width="80" Margin="0,0,8,0" ToolTip="Clear all learned data.">Clear</Button>
             </StackPanel>
         </Border>
