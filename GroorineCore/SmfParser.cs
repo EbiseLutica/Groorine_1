@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Groorine.DataModel;
 using Groorine.Events;
@@ -15,13 +16,12 @@ namespace Groorine
 	/// </summary>
 	public static class SmfParser
 	{
-
-
 		static int Pow(int a, int b)
 		{
+			var r = a;
 			for (var hage = 1; hage < b; hage++)
-				a *= a;
-			return a;
+				r *= a;
+			return r;
 		}
 
 		/// <summary>
@@ -60,7 +60,8 @@ namespace Groorine
 					tracks.Add(mt = new Track(events));
 					mt.Name = $"Track {i + 1}";
 					var noteDic = new Dictionary<byte, NoteEvent>();
-					var btype = 0;
+					var prevType = 0;
+					byte prevChannel = 0;
 					var tick = 0;
 					var j = 0;
 					while (j < size)
@@ -195,10 +196,10 @@ namespace Groorine
 									case 0xB0:
 										// Control Change
 										byte no = br.ReadByte(), dat = br.ReadByte();
+										j += 2;
 										if (no == 111)
 										{
 											loopStart = tick;
-											j += 2;
 											break;
 										}
 										events.Add(new ControlEvent
@@ -208,7 +209,6 @@ namespace Groorine
 											ControlNo = no,
 											Data = dat
 										});
-										j += 2;
 										break;
 									case 0xC0:
 										// Program Change
@@ -259,9 +259,9 @@ namespace Groorine
 										if ((type & 0x80) == 0)
 										{
 											// ランニングステータス
-											switch (btype)
+											switch (prevType & 0xF0)
 											{
-												case 0x80:
+												case 0x90:
 													// Note On
 													vel = br.ReadByte();
 													if (noteDic.ContainsKey(type))
@@ -273,7 +273,7 @@ namespace Groorine
 													{
 														events.Add(noteDic[type] = new NoteEvent
 														{
-															Channel = channel,
+															Channel = prevChannel,
 															Note = type,
 															Velocity = vel,
 															Tick = tick
@@ -285,7 +285,7 @@ namespace Groorine
 													// Control Change
 													events.Add(new ControlEvent
 													{
-														Channel = channel,
+														Channel = prevChannel,
 														Tick = tick,
 														ControlNo = type,
 														Data = br.ReadByte()
@@ -296,7 +296,7 @@ namespace Groorine
 													// Program Change
 													events.Add(new ProgramEvent
 													{
-														Channel = channel,
+														Channel = prevChannel,
 														Tick = tick,
 														ProgramNo = type
 													});
@@ -305,7 +305,7 @@ namespace Groorine
 													// Pitch Bend:
 													events.Add(new PitchEvent
 													{
-														Channel = channel,
+														Channel = prevChannel,
 														Tick = tick,
 														Bend = (short)((br.ReadByte() << 7 | type - 8192))
 													});
@@ -315,7 +315,7 @@ namespace Groorine
 													// PAT
 													events.Add(new PolyphonicKeyPressureEvent
 													{
-														Channel = channel,
+														Channel = prevChannel,
 														Tick = tick,
 														NoteNumber = type,
 														Pressure = br.ReadByte()
@@ -326,7 +326,7 @@ namespace Groorine
 													// CAT
 													events.Add(new ChannelPressureEvent
 													{
-														Channel = channel,
+														Channel = prevChannel,
 														Tick = tick,
 														Pressure = type
 													});
@@ -336,7 +336,11 @@ namespace Groorine
 										break;
 								
 								}
-								btype = type;
+								if ((type & 0x80) != 0)
+								{
+									prevType = type;
+									prevChannel = channel;
+								}
 								break;
 						}
 					}
